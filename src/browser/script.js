@@ -1,6 +1,6 @@
 const TRIES = 6
 const colorMode = document.getElementById('colorMode')
-const twit = document.getElementById('twit')
+const share = document.getElementById('share')
 const announcer = document.getElementById('announcer')
 const showInfo = document.getElementById('showInfo')
 const info = document.getElementById('info')
@@ -8,6 +8,7 @@ const showStats = document.getElementById('showStats')
 const stats = document.getElementById('stats')
 const body = document.querySelector('body')
 const activeRow = document.getElementsByClassName('active')
+const clipboard = document.getElementById('clipboard')
 const buttons = {}
 
 const [, gameSlug] = window.location.pathname.split('/')
@@ -116,6 +117,10 @@ document.addEventListener(
   'click',
   e => {
     switch (e.target) {
+      case share:
+        e.preventDefault()
+        doClipboard(clipboard.value)
+        break
       case colorMode:
         e.preventDefault()
         e.target.blur()
@@ -135,7 +140,8 @@ document.addEventListener(
         break
       default:
         if (
-          typeof e.target.getAttribute('target') !== 'string' &&
+          !e.target.hasAttribute('target') &&
+          !e.target.hasAttribute('src') &&
           (e.target.classList.contains('close') ||
             !e.target.closest('#info,#stats'))
         ) {
@@ -202,13 +208,9 @@ const updateStats = () => {
         text.push(o[1].map(outcome => c[outcome]).join(' '))
       })
       text.push(`🔥 https://yourdle.edgecompute.app/${gameSlug}`)
-      twit.setAttribute(
-        'href',
-        'https://twitter.com/intent/tweet?text=' +
-          encodeURIComponent(text.join('\n'))
-      )
-      twit.style.display = 'block'
-    } else twit.style.display = 'none'
+      clipboard.value = text.join('\n')
+      share.style.display = 'block'
+    } else share.style.display = 'none'
   }
   opn(stats)
 }
@@ -230,4 +232,33 @@ if (state) {
     )
       updateStats()
   }
+}
+
+function fallbackCopyTextToClipboard (text) {
+  clipboard.value = text
+  clipboard.focus()
+  clipboard.select()
+  let copied = false
+  try {
+    copied = document.execCommand('copy')
+  } catch (err) {
+    copied = false
+  }
+  return copied
+}
+
+async function copyTextToClipboard (text) {
+  if (!navigator.clipboard) {
+    return fallbackCopyTextToClipboard(text)
+  }
+  return navigator.clipboard
+    .writeText(text)
+    .then(() => true)
+    .catch(() => false)
+}
+
+function doClipboard (text) {
+  copyTextToClipboard(text).then(ok => {
+    announce(ok ? `Copied to clipboard\n📋` : `Copy:\n\n${text}`)
+  })
 }

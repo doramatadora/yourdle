@@ -26,7 +26,10 @@
 
   <body>
     <header>
-      <a href="https://yourdle.edgecompute.app" target="_self"><img src="/yourdle.svg" alt="Yourdle" /></a>
+      <div>
+        <a href="/" target="_self"><img src="/yourdle.svg" alt="Yourdle" /></a>
+        <h1 class="h3">{GAME}</h1>
+      </div>
       <nav>
         <a class="menu" title="How to play" id="showInfo" href="#" tabindex="1"
           >?</a
@@ -75,7 +78,10 @@
         <div class="tile">E</div>
       </div>
       <p>The letter O is not in the word.</p>
-      <p class="footnote"><a href="/report?game={SLUG}">Report game</a><a href="/new" class="diy">Create your own</a></p>
+      <p class="footnote">
+        <a href="/report?game={SLUG}" target="_self">Report game</a>
+        <a href="/new" class="diy" target="_self">Create your own</a>
+     </p>
     </div>
     <div id="stats" class="modal">
       <h3>{GAME}</h3>
@@ -99,8 +105,8 @@
         </div>
       </div>
       <a
-        id="twit"
-        href="https://twitter.com/intent/tweet?text=https://yourdle.edgecompute.app"
+        id="share"
+        href="#"
         target="_blank"
         >Share 💪</a
       >

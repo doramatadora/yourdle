@@ -6,7 +6,6 @@
 }
 
 h1,
-h2,
 h3,
 .tile,
 button,
@@ -15,8 +14,13 @@ nav {
   text-transform: uppercase;
 }
 
-h2 {
-  margin: 0 auto;
+.logo {
+  font-size: 1.8em;
+  margin: 0;
+}
+
+.h3 {
+  font-size: 1.2em;
 }
 
 *::-webkit-scrollbar {
@@ -58,6 +62,16 @@ footer,
   justify-content: center;
   touch-action: manipulation;
   text-align: center;
+}
+
+header>div {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+nav {
+  margin-bottom: 0.2em;
 }
 
 .row>.tile,
@@ -119,8 +133,8 @@ button.action {
 .tile[data-state="wrong"],
 button[data-state="wrong"],
 .hiContrast #colorMode,
-#twit:visited,
-#twit {
+#share:visited,
+#share {
   border-color: #182931;
   background-color: #182931;
   color: #ffffff;
@@ -148,7 +162,7 @@ button[data-state="correct"],
   background-color: #04b2e1;
 }
 
-#twit {
+#share {
   display: none;
   font-size: 1.2em;
   padding: 10px;
@@ -156,8 +170,8 @@ button[data-state="correct"],
   text-decoration: none;
 }
 
-#twit:active,
-#twit:hover {
+#share:active,
+#share:hover {
   border-color: #2b4450;
   background-color: #2b4450;
 }
@@ -180,7 +194,7 @@ button[data-state="correct"],
 
 #announcer {
   color: #ffffff;
-  background-color: #471537;
+  background-color: #2b4450;
 }
 
 .modal,
@@ -263,10 +277,6 @@ a:active {
   text-decoration-style: wavy;
 }
 
-.diy {
-  font-weight: bold;
-}
-
 .close {
   text-decoration: none;
   position: absolute;
@@ -329,6 +339,16 @@ hr {
 
   header {
     min-width: 100%;
+  }
+
+  .h3 {
+    font-size: 0.9em;
+  }
+}
+
+@media only screen and (max-width: 350px) {
+  .h3 {
+    display: none;
   }
 }
 
@@ -436,4 +456,11 @@ hr {
 .flish:hover {
   background-position: left;
   transition: 0.8s
+}
+
+#clipboard {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
 }
