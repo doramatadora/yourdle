@@ -1,74 +1,114 @@
-//! Default Compute@Edge template program.
-
 use fastly::http::{header, Method, StatusCode};
 use fastly::{mime, Error, Request, Response};
+mod game;
+mod guess;
+mod page;
+mod state;
 
-/// The entry point for your application.
-///
-/// This function is triggered when your service receives a client request. It could be used to
-/// route based on the request properties (such as method or path), send the request to a backend,
-/// make completely new requests, and/or generate synthetic responses.
-///
-/// If `main` returns an error, a 500 error response will be delivered to the client.
+use guess::{Guess, Guesses};
+
+// const LONG_CACHE: &str = "public, max-age=21600, immutable";
+const LONG_CACHE: &str = "private, no-cache, max-age=0, no-store";
 
 #[fastly::main]
 fn main(req: Request) -> Result<Response, Error> {
-    // Log service version
-    println!(
-        "FASTLY_SERVICE_VERSION: {}",
-        std::env::var("FASTLY_SERVICE_VERSION").unwrap_or_else(|_| String::new())
-    );
-
-    // Filter request methods...
     match req.get_method() {
-        // Block requests with unexpected methods
-        &Method::POST | &Method::PUT | &Method::PATCH | &Method::DELETE => {
+        &Method::GET | &Method::HEAD | &Method::POST => (),
+        _ => {
             return Ok(Response::from_status(StatusCode::METHOD_NOT_ALLOWED)
-                .with_header(header::ALLOW, "GET, HEAD, PURGE")
-                .with_body_text_plain("This method is not allowed\n"))
+                .with_header(header::ALLOW, "GET, HEAD, POST"))
         }
-
-        // Let any other requests through
-        _ => (),
     };
-
-    // Pattern match on the path...
+    // Route requests.
     match req.get_path() {
-        // If request is to the `/` path...
-        "/" => {
-            // Below are some common patterns for Compute@Edge services using Rust.
-            // Head to https://developer.fastly.com/learning/compute/rust/ to discover more.
+        "/favicon.png" => Ok(png_resp(include_bytes!("browser/images/favicon.png"))),
+        "/card.png" => Ok(png_resp(include_bytes!("browser/images/card.png"))),
+        "/yourdle.svg" => Ok(text_resp(
+            mime::IMAGE_SVG,
+            include_str!("browser/images/yourdle.svg"),
+        )),
+        "/style.css" => Ok(text_resp(
+            mime::TEXT_CSS_UTF_8,
+            include_str!("browser/style.css"),
+        )),
+        "/script.js" => Ok(byte_resp(
+            mime::APPLICATION_JAVASCRIPT_UTF_8,
+            include_bytes!("browser/script.js"),
+        )),
+        "/" => Ok(html_resp(include_str!("browser/index.html"))),
+        "/new" => Ok(text_resp(mime::TEXT_PLAIN, "New game page here")),
+        "/report" => Ok(text_resp(mime::TEXT_PLAIN, "Report game page here")),
+        req_path => {
+            let game_slug = match req_path[1..].find('/') {
+                Some(i) => &req_path[1..i],
+                None => &req_path[1..],
+            };
+            println!("The game is {}", game_slug);
+            // Load game data.
+            if let Ok(mut game_data) = game::GameData::load(game_slug) {
+                // Load today's word.
+                let (word, word_idx, total_words) = game_data.get_word().unwrap();
+                println!("Loaded word: {}, {}/{}", word, word_idx, total_words);
 
-            // Create a new request.
-            // let mut bereq = Request::get("http://httpbin.org/headers")
-            //     .with_header("X-Custom-Header", "Welcome to Compute@Edge!")
-            //     .with_ttl(60);
+                println!(
+                    "Loaded state: {:?}",
+                    &state::get_from(game_slug, req.get_header_str("cookie").unwrap_or_default())
+                );
+                // Load game state.
+                let mut guesses = Guesses::load(
+                    &state::get_from(game_slug, req.get_header_str("cookie").unwrap_or_default()),
+                    word.len(),
+                );
 
-            // Add request headers.
-            // bereq.set_header(
-            //     "X-Another-Custom-Header",
-            //     "Recommended reading: https://developer.fastly.com/learning/compute",
-            // );
-
-            // Forward the request to a backend.
-            // let mut beresp = bereq.send("backend_name")?;
-
-            // Remove response headers.
-            // beresp.remove_header("X-Another-Custom-Header");
-
-            // Log to a Fastly endpoint.
-            // use std::io::Write;
-            // let mut endpoint = fastly::log::Endpoint::from_name("my_endpoint");
-            // writeln!(endpoint, "Hello from the edge!").unwrap();
-
-            // Send a default synthetic response.
-            Ok(Response::from_status(StatusCode::OK)
-                .with_content_type(mime::TEXT_HTML_UTF_8)
-                .with_body(include_str!("welcome-to-compute@edge.html")))
+                // Record a guess, if the guess query parmeter is set.
+                if let Some(guess) = req.get_query_parameter("guess") {
+                    if game_data.validate_word(guess) {
+                        // Check if the guess is correct.
+                        guesses.update(Guess::new(&guess, &word));
+                        // Save new state and respond with outcome.
+                        return Ok(Response::from_status(StatusCode::OK)
+                            .with_header(
+                                header::SET_COOKIE,
+                                state::as_cookie(game_slug, &guesses.json()),
+                            )
+                            .with_body_text_plain(&guesses.last_outcome_json()));
+                    }
+                    println!("Invalid guess: {}", guess);
+                    // Respond with 404 for invalid PoP.
+                    return Ok(Response::from_status(StatusCode::NOT_FOUND));
+                }
+                // Render the game index.
+                return Ok(Response::from_status(StatusCode::OK)
+                    .with_header(
+                        header::SET_COOKIE,
+                        state::as_cookie(game_slug, &guesses.json()),
+                    )
+                    .with_body_text_html(&format!("{}{}{}", game_data, guesses, include_str!("browser/end.html"))));
+            }
+            // Respond with 404 for anything else.
+            Ok(Response::from_status(StatusCode::NOT_FOUND))
         }
-
-        // Catch all other requests and return a 404.
-        _ => Ok(Response::from_status(StatusCode::NOT_FOUND)
-            .with_body_text_plain("The page you requested could not be found\n")),
     }
+}
+
+fn byte_resp(mime_type: mime::Mime, body: &[u8]) -> Response {
+    Response::from_status(StatusCode::OK)
+        .with_content_type(mime_type)
+        .with_header(header::CACHE_CONTROL, LONG_CACHE)
+        .with_body_octet_stream(body)
+}
+
+fn text_resp(mime_type: mime::Mime, body: &str) -> Response {
+    Response::from_status(StatusCode::OK)
+        .with_content_type(mime_type)
+        .with_header(header::CACHE_CONTROL, LONG_CACHE)
+        .with_body(body)
+}
+
+fn html_resp(body: &str) -> Response {
+    Response::from_status(StatusCode::OK).with_body_text_html(body)
+}
+
+fn png_resp(body: &[u8]) -> Response {
+    byte_resp(mime::IMAGE_PNG, body)
 }

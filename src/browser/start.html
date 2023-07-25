@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="author" content="Dora Militaru" />
+    <meta name="description" content="{DESCRIPTION}">
+    <title>{GAME} | Made with Yourdle - Create your own word game</title>
+    <meta property="og:title" content="{GAME} | Made with Yourdle - Create your own word game">
+    <meta property="og:description" content="{DESCRIPTION}">
+    <meta property="og:image" content="https://yourdle.edgecompute.app/card.png">
+    <meta property="og:url" content="https://yourdle.edgecompute.app/{SLUG}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{GAME} | Made with Yourdle - Create your own word game">
+    <meta name="twitter:description" content="{DESCRIPTION}">
+    <meta name="twitter:image" content="https://yourdle.edgecompute.app/card.png">
+    <link rel="icon" href="favicon.png" type="image/png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="style.css" rel="stylesheet" />
+  </head>
+
+  <body>
+    <header>
+      <a href="https://yourdle.edgecompute.app" target="_self"><img src="/yourdle.svg" alt="Yourdle" /></a>
+      <nav>
+        <a class="menu" title="How to play" id="showInfo" href="#" tabindex="1"
+          >?</a
+        >
+        <a
+          class="menu"
+          title="High contrast"
+          id="colorMode"
+          href="#"
+          tabindex="1"
+          >◑</a
+        >
+        <a class="menu" title="Statistics" id="showStats" href="#" tabindex="1"
+          >☷</a
+        >
+      </nav>
+    </header>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="announcer"></div>
+    <div id="info" class="modal">
+      <h3>{GAME}</h3>
+      <a class="close" title="Close" href="#">✕</a> 
+      <p>{DESCRIPTION}</p>
+      <p>
+        You have 6 guesses. After each attempt,
+        the color of the tiles will change to show how close your guess was.
+      </p>
+      <div class="row">
+        <div class="tile" data-state="correct">L</div>
+        <div class="tile">I</div>
+        <div class="tile">V</div>
+        <div class="tile">E</div>
+      </div>
+      <p>The letter L is in the correct spot.</p>
+      <div class="row">
+        <div class="tile">L</div>
+        <div class="tile">A</div>
+        <div class="tile" data-state="near">M</div>
+        <div class="tile">P</div>
+      </div>
+      <p>The letter M is in the wrong spot.</p>
+      <div class="row">
+        <div class="tile">L</div>
+        <div class="tile" data-state="wrong">O</div>
+        <div class="tile">V</div>
+        <div class="tile">E</div>
+      </div>
+      <p>The letter O is not in the word.</p>
+      <p class="footnote"><a href="/report?game={SLUG}">Report game</a><a href="/new" class="diy">Create your own</a></p>
+    </div>
+    <div id="stats" class="modal">
+      <h3>{GAME}</h3>
+      <a class="close" title="Close" href="#">✕</a>
+      <div class="row">
+        <div class="stat">
+          <h4>0</h4>
+          <h5>Games</h5>
+        </div>
+        <div class="stat">
+          <h4>0%</h4>
+          <h5>Won</h5>
+        </div>
+        <div class="stat">
+          <h4>0</h4>
+          <h5>Streak</h5>
+        </div>
+        <div class="stat">
+          <h4>0</h4>
+          <h5>Best streak</h5>
+        </div>
+      </div>
+      <a
+        id="twit"
+        href="https://twitter.com/intent/tweet?text=https://yourdle.edgecompute.app"
+        target="_blank"
+        >Share 💪</a
+      >
+      <h4>Guess distribution</h4>
+      <div class="row">
+        <div class="dist">
+          <div class="bar"><span>0</span></div>
+          <h5>1</h5>
+        </div>
+        <div class="dist">
+          <div class="bar"><span>0</span></div>
+          <h5>2</h5>
+        </div>
+        <div class="dist">
+          <div class="bar"><span>0</span></div>
+          <h5>3</h5>
+        </div>
+        <div class="dist">
+          <div class="bar"><span>0</span></div>
+          <h5>4</h5>
+        </div>
+        <div class="dist">
+          <div class="bar"><span>0</span></div>
+          <h5>5</h5>
+        </div>
+        <div class="dist">
+          <div class="bar"><span>0</span></div>
+          <h5>6</h5>
+        </div>
+      </div>
+    </div>
+    <main>

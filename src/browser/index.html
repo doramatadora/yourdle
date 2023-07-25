@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="author" content="Dora Militaru" />
+  <meta name="description"
+    content="Create your own word game. Challenge friends with clever puzzles. Dive into brain-teasing fun and share the excitement of word mastery!">
+  <title>Yourdle - Create your own word game</title>
+  <meta property="og:title" content="Yourdle - Create your own word game">
+  <meta property="og:description" content="Create your own word game. Challenge friends with clever puzzles. Dive into brain-teasing fun and share the excitement of word mastery!">
+  <meta property="og:image" content="https://yourdle.edgecompute.app/card.png">
+  <meta property="og:url" content="https://yourdle.edgecompute.app">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Yourdle - Create your own word game">
+  <meta name="twitter:description" content="Create your own word game. Challenge friends with clever puzzles. Dive into brain-teasing fun and share the excitement of word mastery!">
+  <meta name="twitter:image" content="https://yourdle.edgecompute.app/card.png">
+  <link rel="icon" href="favicon.png" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="style.css" rel="stylesheet" />
+</head>
+
+<body>
+  <header>
+    <a href="https://yourdle.edgecompute.app" target="_self"><img src="/yourdle.svg" alt="Yourdle" /></a>
+    <h1>YOURDLE</h1>
+    <nav>
+      <a class="menu" title="How to play" id="showInfo" href="#" tabindex="1">?</a>
+
+    </nav>
+  </header>
+  <noscript>You need to enable JavaScript to run this app.</noscript>
+  <div id="announcer"></div>
+  <div id="info" class="modal">
+    <h3>How to play</h3>
+    <a class="close" title="Close" href="#">✕</a>
+    <p>
+      You have 6 guesses to solve the daily word challenge. After each attempt,
+      the color of the tiles will change to show how close your guess was.
+    </p>
+    <div class="row">
+      <div class="tile" data-state="correct">L</div>
+      <div class="tile">I</div>
+      <div class="tile">V</div>
+      <div class="tile">E</div>
+    </div>
+    <p>The letter L is in the correct spot.</p>
+    <div class="row">
+      <div class="tile">L</div>
+      <div class="tile">A</div>
+      <div class="tile" data-state="near">M</div>
+      <div class="tile">P</div>
+    </div>
+    <p>The letter M is in the wrong spot.</p>
+    <div class="row">
+      <div class="tile">L</div>
+      <div class="tile" data-state="wrong">O</div>
+      <div class="tile">V</div>
+      <div class="tile">E</div>
+    </div>
+    <p>The letter O is not in the word.</p>
+    <hr/>
+    <a class="menu" title="High contrast" id="colorMode" href="#" tabindex="1">◑</a>
+  </div>
+  <main>
+    <article>
+      <p>Create your own word game. Challenge your friends. Share the excitement of word mastery!</p>
+      <a class="cta flish" href="/new" target="_self">🖊️ New word list ✨</a>
+    </article>
+    <hr />
+    <article>
+      DAILY CHALLENGES
+    </article>
+    <article class="card">
+      <h3>Capitals</h3>
+      <p>Test your geography knowledge by guessing capital cities around the world 🌍</p>
+      <a class="card-link" aria-hidden="true" tabindex="-1" href="/capitals" target="_self">Capitals</a>
+    </article>
+    <article class="card inverted-8">
+      <h3>Presidentify</h3>
+      <p>Name that U.S. president 🇺🇸</p>
+      <a class="card-link" aria-hidden="true" tabindex="-1" href="/presidentify" target="_self">Presidents</a>
+    </article>
+    <article class="card">
+      <h3>Fastly POPs</h3>
+      <p>Can you guess the 3-letter Fastly point of presence?
+      </p>
+      <a class="card-link" aria-hidden="true" tabindex="-1" href="/pops" target="_self">POPs</a>
+    </article>
+    <article class="card">
+      <h3>Finalleigh</h3>
+      <p>Creatively spelled names. My name is Bone, pronounced Bonnie.</p>
+      <a class="card-link" aria-hidden="true" tabindex="-1" href="/finalleigh" target="_self">POPs</a>
+    </article>
+  </main>
+  <footer>
+    <p>
+      Built by <a href="https://doramilitaru.com" target="_blank">Dora</a> 👩🏻‍🔧 with <a
+        href="https://www.fastly.com/products/edge-compute" target="_blank">Fastly Compute@Edge</a> 🚀
+      & <a href="https://rust-lang.org/" target="_blank">Rust</a> 🦀
+    </p>
+  </footer>
+</body>
+<script src="script.js" type="text/javascript"></script>
+
+</html>

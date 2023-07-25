@@ -1,8 +1,31 @@
 # This file describes a Fastly Compute@Edge package. To learn more visit:
 # https://developer.fastly.com/reference/fastly-toml/
 
-authors = ["<oss@fastly.com>"]
-description = "A basic starter kit that demonstrates routing, simple synthetic responses and overriding caching rules."
+authors = ["<dmilitaru@fastly.com>"]
+description = "Make your own word game, using Fastly's Compute@Edge 🦀"
 language = "rust"
 manifest_version = 3
-name = "Default starter for Rust"
+name = "yourdle"
+service_id = "IV46ATG54AR2sdPXjQ9NG6"
+
+[local_server]
+
+  [local_server.backends]
+
+  [local_server.kv_stores]
+
+    [[local_server.kv_stores.yourdle]]
+      file = "./.dora/setup/pops.json"
+      key = "pops"
+
+    [[local_server.kv_stores.yourdle]]
+      file = "./.dora/setup/presidentify.json"
+      key = "presidentify"
+
+    [[local_server.kv_stores.yourdle]]
+      file = "./.dora/setup/capitals.json"
+      key = "capitals"
+
+    [[local_server.kv_stores.yourdle]]
+      file = "./.dora/setup/finalleigh.json"
+      key = "finalleigh"
