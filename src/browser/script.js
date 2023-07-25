@@ -16,7 +16,6 @@ const [, gameSlug] = window.location.pathname.split('/')
 if (localStorage.getItem('hiContrast') === 'true')
   body.classList.add('hiContrast')
 
-
 const opn = el => {
   closeAll()
   el.style.display = 'block'
@@ -79,7 +78,6 @@ const unmarshalState = () => {
 const updateStats = () => {
   const intPerc = (num, total) => parseInt((num / total) * 100)
   const state = unmarshalState()
-  console.log(state)
   if (state && state.games) {
     const [games, winRate, streak, maxStreak] =
       stats.querySelectorAll('.stat>h4')
@@ -106,7 +104,7 @@ const updateStats = () => {
       state.outcome.forEach(o => {
         text.push(o[1].map(outcome => c[outcome]).join(' '))
       })
-      text.push(`🔥 https://yourdle.edgecompute.app/${gameSlug}`)
+      text.push(`https://yourdle.edgecompute.app/${gameSlug}`)
       clipboard.value = text.join('\n')
       share.style.display = 'block'
     } else share.style.display = 'none'
@@ -213,7 +211,7 @@ if (gameSlug.length && !['new', 'report'].includes(gameSlug)) {
               if (res.ok) return res.json()
               throw new Error(res.status)
             })
-            .then(res => recordResult(res, word))
+            .then(([word, res]) => recordResult(res, word))
             .catch(({ message }) =>
               announce(
                 message === '404'

@@ -75,10 +75,6 @@
     <article>
       <p>Create your own word game. Challenge your friends.</p>
     </article>
-    <!-- <hr />
-    <article>
-      DAILY CHALLENGES
-    </article> -->
     <article>
       <form action="" method="post" id="newGameForm">
         <div class="input">
@@ -94,14 +90,14 @@
         <div class="input">
           <label for="words">Word list</label>
           <textarea id="words" name="words" placeholder="7-365 words, 3-10 English letters per word" required
-            minlength="25"></textarea>
+            minlength="25" maxlength="4000"></textarea>
         </div>
         <div class="hint">
           <a href="https://chat.openai.com" target="_blank">Ask an AI</a> to generate a list of
           words for you, e.g., <span>"Give me a list of 100 one-word culinary spices, each with under 10 letters"</span>
         </div>
         <hr/>
-        <button id="make" class="cta flish" type="submit" disabled>Make it ✨</button>
+        <button id="make" class="cta flish" type="submit">Make it ✨</button>
       </form>
     </article>
   </main>
@@ -114,5 +110,5 @@
   </footer>
 </body>
 <script src="script.js" type="text/javascript"></script>
-
+<script src="new.js" type="text/javascript"></script>
 </html>

@@ -525,13 +525,16 @@ hr {
   border-style: hidden;
   border: 0 none;
   height: inherit;
-  padding: 1.7em 6px 0.5em 6px;
+  margin-top: 1.7em;
+  padding: 0px 6px 0.5em 6px;
   width: 100%;
+  max-width: 100%;
   font-family: "Rubik" sans-serif;
   font-size: 1.1em;
 }
 
 .input>textarea{
+  resize: vertical; 
   min-height: 5em;
 }
 

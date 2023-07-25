@@ -5,13 +5,14 @@ mod guess;
 mod page;
 mod state;
 
+use game::{GameData, GameDataForm};
 use guess::{Guess, Guesses};
 
 // const LONG_CACHE: &str = "public, max-age=21600, immutable";
 const LONG_CACHE: &str = "private, no-cache, max-age=0, no-store";
 
 #[fastly::main]
-fn main(req: Request) -> Result<Response, Error> {
+fn main(mut req: Request) -> Result<Response, Error> {
     match req.get_method() {
         &Method::GET | &Method::HEAD | &Method::POST => (),
         _ => {
@@ -31,13 +32,18 @@ fn main(req: Request) -> Result<Response, Error> {
             mime::TEXT_CSS_UTF_8,
             include_str!("browser/style.css"),
         )),
-        "/script.js" => Ok(byte_resp(
-            mime::APPLICATION_JAVASCRIPT_UTF_8,
-            include_bytes!("browser/script.js"),
-        )),
+        "/script.js" => Ok(js_resp(include_bytes!("browser/script.js"))),
+        "/new.js" => Ok(js_resp(include_bytes!("browser/new.js"))),
         "/" => Ok(html_resp(include_str!("browser/index.html"))),
         "/new" => match req.get_method() {
-            &Method::POST => Ok(html_resp(include_str!("browser/new.html"))),
+            &Method::POST => match req.take_body_json::<GameDataForm>() {
+                Ok(form) => {
+                    let game_data = GameData::from_form(form);
+                    println!("Gd: {:?}", game_data);
+                    Ok(Response::from_status(StatusCode::OK))
+                }
+                _ => Ok(Response::from_status(StatusCode::BAD_REQUEST)),
+            },
             _ => Ok(html_resp(include_str!("browser/new.html"))),
         },
         "/report" => Ok(text_resp(mime::TEXT_PLAIN, "Report game page here")),
@@ -74,7 +80,7 @@ fn main(req: Request) -> Result<Response, Error> {
                                 header::SET_COOKIE,
                                 state::as_cookie(game_slug, &guesses.json()),
                             )
-                            .with_body_text_plain(&guesses.last_outcome_json()));
+                            .with_body_json(&guesses.outcome.last())?);
                     }
                     println!("Invalid guess: {}", guess);
                     // Respond with 404 for invalid PoP.
@@ -94,7 +100,8 @@ fn main(req: Request) -> Result<Response, Error> {
                     )));
             }
             // Respond with 404 for anything else.
-            Ok(Response::from_status(StatusCode::NOT_FOUND).with_body_text_html(&include_str!("browser/404.html")))
+            Ok(Response::from_status(StatusCode::NOT_FOUND)
+                .with_body_text_html(&include_str!("browser/404.html")))
         }
     }
 }
@@ -119,4 +126,8 @@ fn html_resp(body: &str) -> Response {
 
 fn png_resp(body: &[u8]) -> Response {
     byte_resp(mime::IMAGE_PNG, body)
+}
+
+fn js_resp(body: &[u8]) -> Response {
+    byte_resp(mime::APPLICATION_JAVASCRIPT_UTF_8, body)
 }

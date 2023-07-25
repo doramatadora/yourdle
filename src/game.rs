@@ -4,6 +4,7 @@ use fastly::KVStore;
 use rand::seq::SliceRandom;
 use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter, Result as FmtResult};
+use std::collections::HashSet;
 
 const KV_STORE_NAME: &str = "yourdle";
 
@@ -17,13 +18,23 @@ pub struct GameData {
     starts: i64,
 }
 
+#[derive(Debug, Deserialize, Serialize, Clone, Default)]
+pub struct GameDataForm {
+    pub game: String,
+    pub description: String,
+    pub words: String,
+}
+
 impl GameData {
-    pub fn new(game: String, description: String, words: Vec<String>) -> Self {
-        let slug = slugify(&game);
+    // Any validation of form data submitted for the creation of a new game.
+    pub fn from_form(form: GameDataForm) -> Self {
+        let slug: String = slugify(&form.game);
+        let mut words = sanitize_as_words(form.words);
+        randomize_vec(&mut words);
         GameData {
-            game,
+            game: form.game,
             slug,
-            description,
+            description: form.description,
             words,
             starts: timestamp_for_today(),
         }
@@ -130,4 +141,24 @@ pub fn timestamp_for_today() -> i64 {
 fn randomize_vec(strings: &mut Vec<String>) {
     let mut rng = rand::thread_rng();
     strings.shuffle(&mut rng);
+}
+
+fn sanitize_as_words(text: String) -> Vec<String> {
+    // Ensure we have a maximum of 365 unique words.
+    let unique_words: HashSet<String> = text
+        // Replace whitespace and punctuation with a single space.
+        .replace(|c: char| c.is_whitespace() || c.is_ascii_punctuation(), " ")
+        // Remove non-English alphabet characters.
+        .replace(|c: char| !c.is_whitespace() && !c.is_ascii_alphabetic(), "")
+        .to_uppercase()
+        .trim()
+        // Split into words.
+        .split_whitespace()
+        // Ensure each word is at least 3 and at most 10 letters long.
+        .filter(|&s| s.len() >= 3 && s.len() <= 10)
+        .map(String::from)
+        .take(365)
+        .collect();
+
+    unique_words.into_iter().collect()
 }

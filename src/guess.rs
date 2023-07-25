@@ -46,11 +46,6 @@ impl Guess {
     pub fn is_win(&self) -> bool {
         self.1.iter().all(|&x| x == Match::Correct)
     }
-
-    // Output as JSON string.
-    pub fn json(&self) -> String {
-        serde_json::to_string(&self.1).unwrap_or_default()
-    }
 }
 
 #[derive(Serialize, Deserialize, Default, Debug)]
@@ -127,11 +122,6 @@ impl Guesses {
     // Output as JSON string.
     pub fn json(&self) -> String {
         serde_json::to_string(&self).unwrap_or_default()
-    }
-
-    // Get last outcome.
-    pub fn last_outcome_json(&self) -> String {
-        self.outcome.last().unwrap().json()
     }
 }
 
