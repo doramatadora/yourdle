@@ -8,14 +8,14 @@
   <meta name="author" content="Dora Militaru" />
   <meta name="description"
     content="Create your own word game. Challenge friends with clever puzzles. Dive into brain-teasing fun and share the excitement of word mastery!">
-  <title>Yourdle - Create your own word game</title>
-  <meta property="og:title" content="Yourdle - Create your own word game">
+  <title>New game | Yourdle - Create your own word game</title>
+  <meta property="og:title" content="New game | Yourdle - Create your own word game">
   <meta property="og:description"
     content="Create your own word game. Challenge friends with clever puzzles. Dive into brain-teasing fun and share the excitement of word mastery!">
   <meta property="og:image" content="https://yourdle.edgecompute.app/card.png">
   <meta property="og:url" content="https://yourdle.edgecompute.app">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Yourdle - Create your own word game">
+  <meta name="twitter:title" content="New game | Yourdle - Create your own word game">
   <meta name="twitter:description"
     content="Create your own word game. Challenge friends with clever puzzles. Dive into brain-teasing fun and share the excitement of word mastery!">
   <meta name="twitter:image" content="https://yourdle.edgecompute.app/card.png">
@@ -28,7 +28,7 @@
 
 <body>
   <header>
-    <div><a href="/" target="_self"><img src="/yourdle.svg" alt="Yourdle" width="40" height="44" /></a>
+    <div><a href="/" target="_self"><img src="/yourdle.svg" alt="Yourdle" alt="Yourdle" width="40" height="44" /></a>
       <h1 class="logo">YOURDLE</h1>
     </div>
     <nav>
@@ -38,11 +38,14 @@
   <noscript>You need to enable JavaScript to run this app.</noscript>
   <div id="announcer"></div>
   <div id="info" class="modal">
-    <h3>How to play</h3>
+    <h3>Make your own word game</h3>
     <a class="close" title="Close" href="#">✕</a>
     <p>
-      You have 6 guesses to solve the daily word challenge. After each attempt,
-      the color of the tiles will change to show how close your guess was.
+      Upload a word list and create a new game. Share the link with your friends.
+    </p>
+    <p>
+      Your word list is shuffled. A random word is chosen every day.
+      You get 6 guesses to solve the daily word challenge. The color of the tiles will change to show how close each guess was.
     </p>
     <div class="row">
       <div class="tile" data-state="correct">L</div>
@@ -50,53 +53,56 @@
       <div class="tile">V</div>
       <div class="tile">E</div>
     </div>
-    <p>The letter L is in the correct spot.</p>
+    <p>L is in the correct spot.</p>
     <div class="row">
       <div class="tile">L</div>
       <div class="tile">A</div>
       <div class="tile" data-state="near">M</div>
       <div class="tile">P</div>
     </div>
-    <p>The letter M is in the wrong spot.</p>
+    <p>M is in the wrong spot.</p>
     <div class="row">
       <div class="tile">L</div>
       <div class="tile" data-state="wrong">O</div>
       <div class="tile">V</div>
       <div class="tile">E</div>
     </div>
-    <p>The letter O is not in the word.</p>
+    <p>O is not in the word.</p>
     <hr />
     <a class="menu" title="High contrast" id="colorMode" href="#">◑</a>
   </div>
   <main>
     <article>
-      <p>Create your own word game. Challenge your friends. Share the excitement of word mastery!</p>
-      <a class="cta flish" href="/new" target="_self">🖊️ New word list ✨</a>
+      <p>Create your own word game. Challenge your friends.</p>
     </article>
-    <hr />
+    <!-- <hr />
     <article>
-      <h2 class="bodyText">DAILY CHALLENGES</h2>
-    </article>
-    <article class="card">
-      <h3>Capitals</h3>
-      <p>Test your geography knowledge by guessing capital cities around the world 🌍</p>
-      <a class="card-link" aria-hidden="true" tabindex="-1" href="/capitals" target="_self">Capitals</a>
-    </article>
-    <article class="card inverted-8">
-      <h3>Presidentify</h3>
-      <p>Name that U.S. president 🇺🇸</p>
-      <a class="card-link" aria-hidden="true" tabindex="-1" href="/presidentify" target="_self">Presidents</a>
-    </article>
-    <article class="card">
-      <h3>Fastly POPs</h3>
-      <p>Can you guess the 3-letter Fastly point of presence?
-      </p>
-      <a class="card-link" aria-hidden="true" tabindex="-1" href="/pops" target="_self">POPs</a>
-    </article>
-    <article class="card">
-      <h3>Finalleigh</h3>
-      <p>Creatively spelled names. My name is Bone, pronounced Bonnie.</p>
-      <a class="card-link" aria-hidden="true" tabindex="-1" href="/finalleigh" target="_self">POPs</a>
+      DAILY CHALLENGES
+    </article> -->
+    <article>
+      <form action="" method="post" id="newGameForm">
+        <div class="input">
+          <label for="game">Game title</label>
+          <input type="text" id="game" name="game" placeholder="A catchy 3-12 chars" required minlength="3"
+            maxlength="12" />
+        </div>
+        <div class="input">
+          <label for="description">Description</label>
+          <textarea id="description" name="description" placeholder="Explain the game in 140 chars max" required
+            minlength="3" maxlength="140"></textarea>
+        </div>
+        <div class="input">
+          <label for="words">Word list</label>
+          <textarea id="words" name="words" placeholder="7-365 words, 3-10 English letters per word" required
+            minlength="25"></textarea>
+        </div>
+        <div class="hint">
+          <a href="https://chat.openai.com" target="_blank">Ask an AI</a> to generate a list of
+          words for you, e.g., <span>"Give me a list of 100 one-word culinary spices, each with under 10 letters"</span>
+        </div>
+        <hr/>
+        <button id="make" class="cta flish" type="submit" disabled>Make it ✨</button>
+      </form>
     </article>
   </main>
   <footer>

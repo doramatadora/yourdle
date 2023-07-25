@@ -36,7 +36,10 @@ fn main(req: Request) -> Result<Response, Error> {
             include_bytes!("browser/script.js"),
         )),
         "/" => Ok(html_resp(include_str!("browser/index.html"))),
-        "/new" => Ok(text_resp(mime::TEXT_PLAIN, "New game page here")),
+        "/new" => match req.get_method() {
+            &Method::POST => Ok(html_resp(include_str!("browser/new.html"))),
+            _ => Ok(html_resp(include_str!("browser/new.html"))),
+        },
         "/report" => Ok(text_resp(mime::TEXT_PLAIN, "Report game page here")),
         req_path => {
             let game_slug = match req_path[1..].find('/') {
@@ -83,10 +86,15 @@ fn main(req: Request) -> Result<Response, Error> {
                         header::SET_COOKIE,
                         state::as_cookie(game_slug, &guesses.json()),
                     )
-                    .with_body_text_html(&format!("{}{}{}", game_data, guesses, include_str!("browser/end.html"))));
+                    .with_body_text_html(&format!(
+                        "{}{}{}",
+                        game_data,
+                        guesses,
+                        include_str!("browser/end.html")
+                    )));
             }
             // Respond with 404 for anything else.
-            Ok(Response::from_status(StatusCode::NOT_FOUND))
+            Ok(Response::from_status(StatusCode::NOT_FOUND).with_body_text_html(&include_str!("browser/404.html")))
         }
     }
 }

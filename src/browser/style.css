@@ -1,15 +1,15 @@
-@import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@700&family=Rubik:wght@400&display=swap&subset=latin');
-
 * {
   font-family: "Rubik", sans-serif;
   box-sizing: border-box;
 }
 
 h1,
+h2,
 h3,
 .tile,
 button,
-nav {
+nav,
+.input>label {
   font-family: "Comfortaa", sans-serif;
   text-transform: uppercase;
 }
@@ -21,6 +21,11 @@ nav {
 
 .h3 {
   font-size: 1.2em;
+}
+
+.h4 {
+  font-size: 1em;
+  text-transform: none;
 }
 
 *::-webkit-scrollbar {
@@ -98,16 +103,22 @@ nav {
   border-color: #cd4c6e;
 }
 
-button {
-  height: 3em;
-  width: 2em;
+.bodyText, button {
   font-size: 1em;
+}
+
+button {
   background-color: #ebf0f3;
   text-transform: uppercase;
   font-weight: bold;
   border: 0;
   cursor: pointer;
   user-select: none;
+}
+
+aside button {
+  height: 3em;
+  width: 2em;
 }
 
 button:hover {
@@ -199,7 +210,8 @@ button[data-state="correct"],
 
 .modal,
 .card,
-article {
+article,
+.input {
   font-size: 0.9em;
   color: #434e58;
   background-color: #ffffff;
@@ -253,7 +265,6 @@ header img {
 }
 
 footer {
-  color: #7a848d;
   font-size: 0.8em;
   height: 40px;
 }
@@ -329,6 +340,16 @@ hr {
     padding: 0.5em 1em;
   }
 
+  .modal > h2 {
+    max-width: 80%;
+    margin: 0 auto;
+    margin-top: 1em;
+  }
+
+  hr {
+    margin: 0.5em 0;
+  }
+
   .bar {
     padding: 2px;
   }
@@ -341,13 +362,13 @@ hr {
     min-width: 100%;
   }
 
-  .h3 {
+  h1.h3 {
     font-size: 0.9em;
   }
 }
 
 @media only screen and (max-width: 350px) {
-  .h3 {
+  h1.h3 {
     display: none;
   }
 }
@@ -445,7 +466,13 @@ hr {
   display: inline-block;
 }
 
-.flish {
+.cta:disabled {
+  border: 3px solid #182931;
+  background-color: #182931;
+  cursor: not-allowed;
+}
+
+.flish:not([disabled]) {
   background:
     linear-gradient(-45deg, #b41757 40%, #e73c7e 0 60%, #b41757 0) right/300% 100% no-repeat,
     linear-gradient(-45deg, #e73c7e 40%, #b41757 0 60%, #e73c7e 0) right/300% 100% no-repeat;
@@ -453,7 +480,7 @@ hr {
   background-clip: text, padding-box;
 }
 
-.flish:hover {
+.flish:not([disabled]):hover {
   background-position: left;
   transition: 0.8s
 }
@@ -463,4 +490,76 @@ hr {
   position: fixed;
   top: 0;
   left: 0;
+}
+
+.input {
+  border-radius: 3px;
+  background-color: #ffffff;
+  border: 1px solid #c4ccd3;
+  min-height: 3.5em;
+  position: relative;
+  margin: 1em auto;
+}
+
+.input:focus-within {
+  border: 2px solid #e73c7e;
+}
+
+.input>label {
+  display: block;
+  font-size: 0.85em;
+  line-height: 1em;
+  margin: 0px;
+  height: max-content;
+  width: 100%;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  padding: 5px 0px 0px 5px;
+  align-self: flex-start;
+}
+
+.input>input,
+.input>textarea {
+  background-color: transparent;
+  border-style: hidden;
+  border: 0 none;
+  height: inherit;
+  padding: 1.7em 6px 0.5em 6px;
+  width: 100%;
+  font-family: "Rubik" sans-serif;
+  font-size: 1.1em;
+}
+
+.input>textarea{
+  min-height: 5em;
+}
+
+/* .input>input, */
+.input>input::-webkit-input-placeholder,
+.input>input::placeholder,
+/* .input>textarea, */
+.input>textarea::-webkit-input-placeholder,
+.input>textarea::placeholder {
+  color: #e73c7e;
+  opacity: 1;
+}
+
+.input>input:focus,
+.input>textarea:focus,
+.input>label {
+  outline: none;
+  color: #182931;
+}
+
+.hint {
+  display: inline-block;
+  margin-bottom: 1em;
+  font-size: 0.9em;
+}
+
+.hint::before {
+  content: "\1F4A1"; /* Unicode for the lightbulb emoji */
+  display: inline-block;
+  margin-right: 8px; /* Adjust the spacing between the emoji and the text */
 }
