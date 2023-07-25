@@ -103,7 +103,8 @@ nav {
   border-color: #cd4c6e;
 }
 
-.bodyText, button {
+.bodyText,
+button {
   font-size: 1em;
 }
 
@@ -340,7 +341,7 @@ hr {
     padding: 0.5em 1em;
   }
 
-  .modal > h2 {
+  .modal>h2 {
     max-width: 80%;
     margin: 0 auto;
     margin-top: 1em;
@@ -507,7 +508,7 @@ hr {
 
 .input>label {
   display: block;
-  font-size: 0.85em;
+  font-size: 0.9em;
   line-height: 1em;
   margin: 0px;
   height: max-content;
@@ -533,19 +534,22 @@ hr {
   font-size: 1.1em;
 }
 
-.input>textarea{
-  resize: vertical; 
+.input>textarea {
+  resize: vertical;
   min-height: 5em;
 }
 
-/* .input>input, */
+#words {
+  text-transform: uppercase;
+}
+
 .input>input::-webkit-input-placeholder,
 .input>input::placeholder,
-/* .input>textarea, */
 .input>textarea::-webkit-input-placeholder,
 .input>textarea::placeholder {
   color: #e73c7e;
   opacity: 1;
+  text-transform: none;
 }
 
 .input>input:focus,
@@ -562,7 +566,9 @@ hr {
 }
 
 .hint::before {
-  content: "\1F4A1"; /* Unicode for the lightbulb emoji */
+  content: "\1F4A1";
+  /* Unicode for the lightbulb emoji */
   display: inline-block;
-  margin-right: 8px; /* Adjust the spacing between the emoji and the text */
+  margin-right: 8px;
+  /* Adjust the spacing between the emoji and the text */
 }

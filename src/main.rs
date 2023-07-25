@@ -35,34 +35,31 @@ fn main(mut req: Request) -> Result<Response, Error> {
         "/script.js" => Ok(js_resp(include_bytes!("browser/script.js"))),
         "/new.js" => Ok(js_resp(include_bytes!("browser/new.js"))),
         "/" => Ok(html_resp(include_str!("browser/index.html"))),
-        "/new" => match req.get_method() {
-            &Method::POST => match req.take_body_json::<GameDataForm>() {
-                Ok(form) => {
-                    let game_data = GameData::from_form(form);
-                    println!("Gd: {:?}", game_data);
-                    Ok(Response::from_status(StatusCode::OK))
+        "/new" => {
+            match req.get_method() {
+                &Method::POST => {
+                    if let Ok(form) = req.take_body_json::<GameDataForm>() {
+                        if let Ok(mut game_data) = GameData::from_form(form) {
+                            if game_data.save().is_ok() {
+                                return Ok(Response::from_status(StatusCode::OK));
+                            }
+                        }
+                    }
+                    Ok(Response::from_status(StatusCode::BAD_REQUEST))
                 }
-                _ => Ok(Response::from_status(StatusCode::BAD_REQUEST)),
-            },
-            _ => Ok(html_resp(include_str!("browser/new.html"))),
-        },
+                _ => Ok(html_resp(include_str!("browser/new.html"))),
+            }
+        }
         "/report" => Ok(text_resp(mime::TEXT_PLAIN, "Report game page here")),
         req_path => {
             let game_slug = match req_path[1..].find('/') {
                 Some(i) => &req_path[1..i],
                 None => &req_path[1..],
             };
-            println!("The game is {}", game_slug);
             // Load game data.
             if let Ok(mut game_data) = game::GameData::load(game_slug) {
                 // Load today's word.
                 let (word, word_idx, total_words) = game_data.get_word().unwrap();
-                println!("Loaded word: {}, {}/{}", word, word_idx, total_words);
-
-                println!(
-                    "Loaded state: {:?}",
-                    &state::get_from(game_slug, req.get_header_str("cookie").unwrap_or_default())
-                );
                 // Load game state.
                 let mut guesses = Guesses::load(
                     &state::get_from(game_slug, req.get_header_str("cookie").unwrap_or_default()),
@@ -82,8 +79,7 @@ fn main(mut req: Request) -> Result<Response, Error> {
                             )
                             .with_body_json(&guesses.outcome.last())?);
                     }
-                    println!("Invalid guess: {}", guess);
-                    // Respond with 404 for invalid PoP.
+                    // Respond with 404 if the word isn't in the list.
                     return Ok(Response::from_status(StatusCode::NOT_FOUND));
                 }
                 // Render the game index.

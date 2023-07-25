@@ -109,7 +109,6 @@ impl Guesses {
         if self.streak > self.max_streak {
             self.max_streak = self.streak;
         }
-        println!("Win: {:?}", self);
     }
 
     // Update loss statistics.

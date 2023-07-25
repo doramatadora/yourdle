@@ -1,8 +1,10 @@
+use crate::utils::{
+    get_days_since, randomize_vec, sanitize_as_words, timestamp_for_today, truncate_to_max_length,
+};
 use el_slugify::slugify;
 use fastly::KVStore;
 use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter, Result as FmtResult};
-use crate::utils::{get_days_since, randomize_vec, sanitize_as_words, timestamp_for_today, truncate_to_max_length};
 
 const KV_STORE_NAME: &str = "yourdle";
 
@@ -25,15 +27,28 @@ pub struct GameDataForm {
 
 impl GameData {
     // Any validation of form data submitted for the creation of a new game.
-    pub fn from_form(form: GameDataForm) -> Self {
+    pub fn from_form(form: GameDataForm) -> Result<Self, &'static str> {
+        if form.game.len() < 3 {
+            return Err("Name too short");
+        }
+        if form.description.len() < 10 {
+            return Err("Description too short");
+        }
+        let words = sanitize_as_words(form.words);
+        if words.len() < 7 {
+            return Err("Must have at least 7 unique words");
+        }
         let game = truncate_to_max_length(&form.game, 12);
-        GameData {
+        if GameData::check_not_exists(&game).is_err() {
+            return Err("Game already exists");
+        }
+        Ok(GameData {
             game: game.to_string(),
             slug: slugify(&game),
             description: truncate_to_max_length(&form.description, 140).to_string(),
-            words: sanitize_as_words(form.words),
+            words,
             starts: timestamp_for_today(),
-        }
+        })
     }
 
     // Save the game data to KV store – randomize words, start the game today and return the first word.
@@ -59,11 +74,7 @@ impl GameData {
     pub fn load(slug: &str) -> Result<GameData, &str> {
         match KVStore::open(KV_STORE_NAME) {
             Ok(Some(game_store)) => match game_store.lookup_str(slug) {
-                Ok(Some(value)) => {
-                    let game_data: GameData = serde_json::from_str(&value).unwrap();
-                    println!("Loaded game data: {:?}", game_data);
-                    Ok(game_data)
-                }
+                Ok(Some(value)) => Ok(serde_json::from_str::<GameData>(&value).unwrap()),
                 _ => Err("Could not load game data"),
             },
             _ => Err("Could not open KV store"),
@@ -77,7 +88,7 @@ impl GameData {
         let total_words = self.words.len();
         // If all words have been used, reset the game.
         if word_idx >= total_words as i64 {
-            return Ok((self.save()?, 0, total_words));
+            return Ok((self.save().ok().unwrap(), 0, total_words));
         }
         Ok((
             self.words[word_idx as usize].to_owned(),

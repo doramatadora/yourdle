@@ -22,7 +22,9 @@
   <link rel="icon" href="favicon.png" type="image/png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@700&family=Rubik:wght@400&display=swap&subset=latin" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@700&family=Rubik:wght@400&display=swap&subset=latin"
+    rel="stylesheet" />
   <link href="style.css" rel="stylesheet" />
 </head>
 
@@ -45,7 +47,8 @@
     </p>
     <p>
       Your word list is shuffled. A random word is chosen every day.
-      You get 6 guesses to solve the daily word challenge. The color of the tiles will change to show how close each guess was.
+      You get 6 guesses to solve the daily word challenge. The color of the tiles will change to show how close each
+      guess was.
     </p>
     <div class="row">
       <div class="tile" data-state="correct">L</div>
@@ -78,25 +81,28 @@
     <article>
       <form action="" method="post" id="newGameForm">
         <div class="input">
-          <label for="game">Game title</label>
+          <label for="game">Name your game</label>
           <input type="text" id="game" name="game" placeholder="A catchy 3-12 chars" required minlength="3"
             maxlength="12" />
         </div>
+        <span class="validation">Too short</span>
         <div class="input">
-          <label for="description">Description</label>
-          <textarea id="description" name="description" placeholder="Explain the game in 140 chars max" required
-            minlength="3" maxlength="140"></textarea>
+          <label for="description">Describe it</label>
+          <textarea id="description" name="description" placeholder="Introduce the game in 140 chars max" required
+            minlength="10" maxlength="140"></textarea>
         </div>
+        <span class="validation">Too short</span>
         <div class="input">
           <label for="words">Word list</label>
           <textarea id="words" name="words" placeholder="7-365 words, 3-10 English letters per word" required
-            minlength="25" maxlength="4000"></textarea>
+            minlength="25" maxlength="4000" pattern="^(?:\b[a-zA-Z]{3,10}\b\s*){7,}$"></textarea>
         </div>
+        <span class="validation">We need at least 7 words</span>
         <div class="hint">
           <a href="https://chat.openai.com" target="_blank">Ask an AI</a> to generate a list of
           words for you, e.g., <span>"Give me a list of 100 one-word culinary spices, each with under 10 letters"</span>
         </div>
-        <hr/>
+        <hr />
         <button id="make" class="cta flish" type="submit">Make it ✨</button>
       </form>
     </article>
@@ -111,4 +117,5 @@
 </body>
 <script src="script.js" type="text/javascript"></script>
 <script src="new.js" type="text/javascript"></script>
+
 </html>
