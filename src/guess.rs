@@ -1,4 +1,4 @@
-use crate::game::{get_days_since, timestamp_for_today};
+use crate::utils::{get_days_since, timestamp_for_today};
 use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter, Result as FmtResult};
 

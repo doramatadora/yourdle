@@ -1,10 +1,8 @@
-use chrono::{TimeZone, Utc};
 use el_slugify::slugify;
 use fastly::KVStore;
-use rand::seq::SliceRandom;
 use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter, Result as FmtResult};
-use std::collections::HashSet;
+use crate::utils::{get_days_since, randomize_vec, sanitize_as_words, timestamp_for_today, truncate_to_max_length};
 
 const KV_STORE_NAME: &str = "yourdle";
 
@@ -28,14 +26,12 @@ pub struct GameDataForm {
 impl GameData {
     // Any validation of form data submitted for the creation of a new game.
     pub fn from_form(form: GameDataForm) -> Self {
-        let slug: String = slugify(&form.game);
-        let mut words = sanitize_as_words(form.words);
-        randomize_vec(&mut words);
+        let game = truncate_to_max_length(&form.game, 12);
         GameData {
-            game: form.game,
-            slug,
-            description: form.description,
-            words,
+            game: game.to_string(),
+            slug: slugify(&game),
+            description: truncate_to_max_length(&form.description, 140).to_string(),
+            words: sanitize_as_words(form.words),
             starts: timestamp_for_today(),
         }
     }
@@ -125,40 +121,4 @@ impl Display for GameData {
                 .replace("{SLUG}", &self.slug)
         )
     }
-}
-
-pub fn get_days_since(timestamp: i64) -> i64 {
-    // Convert the given timestamp to a DateTime.
-    let given_datetime = Utc.timestamp_opt(timestamp, 0).unwrap();
-    // Calculate the difference in days.
-    Utc::now().signed_duration_since(given_datetime).num_days()
-}
-
-pub fn timestamp_for_today() -> i64 {
-    Utc::now().timestamp()
-}
-
-fn randomize_vec(strings: &mut Vec<String>) {
-    let mut rng = rand::thread_rng();
-    strings.shuffle(&mut rng);
-}
-
-fn sanitize_as_words(text: String) -> Vec<String> {
-    // Ensure we have a maximum of 365 unique words.
-    let unique_words: HashSet<String> = text
-        // Replace whitespace and punctuation with a single space.
-        .replace(|c: char| c.is_whitespace() || c.is_ascii_punctuation(), " ")
-        // Remove non-English alphabet characters.
-        .replace(|c: char| !c.is_whitespace() && !c.is_ascii_alphabetic(), "")
-        .to_uppercase()
-        .trim()
-        // Split into words.
-        .split_whitespace()
-        // Ensure each word is at least 3 and at most 10 letters long.
-        .filter(|&s| s.len() >= 3 && s.len() <= 10)
-        .map(String::from)
-        .take(365)
-        .collect();
-
-    unique_words.into_iter().collect()
 }

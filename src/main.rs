@@ -2,8 +2,8 @@ use fastly::http::{header, Method, StatusCode};
 use fastly::{mime, Error, Request, Response};
 mod game;
 mod guess;
-mod page;
 mod state;
+mod utils;
 
 use game::{GameData, GameDataForm};
 use guess::{Guess, Guesses};
