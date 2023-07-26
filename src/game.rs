@@ -21,8 +21,8 @@ pub struct GameData {
 #[derive(Debug, Deserialize, Serialize, Clone, Default)]
 pub struct GameDataForm {
     pub game: String,
-    pub description: String,
-    pub words: String,
+    pub description: Option<String>,
+    pub words: Option<String>,
 }
 
 impl GameData {
@@ -31,10 +31,11 @@ impl GameData {
         if form.game.len() < 3 {
             return Err("Name too short");
         }
-        if form.description.len() < 10 {
+        let description = form.description.unwrap_or_default();
+        if description.len() < 10 {
             return Err("Description too short");
         }
-        let words = sanitize_as_words(form.words);
+        let words = sanitize_as_words(form.words.unwrap_or_default());
         if words.len() < 7 {
             return Err("Must have at least 7 unique words");
         }
@@ -45,7 +46,7 @@ impl GameData {
         Ok(GameData {
             game: game.to_string(),
             slug: slugify(&game),
-            description: truncate_to_max_length(&form.description, 140).to_string(),
+            description: truncate_to_max_length(&description, 140).to_string(),
             words,
             starts: timestamp_for_today(),
         })
@@ -57,7 +58,6 @@ impl GameData {
             Ok(Some(mut game_store)) => {
                 self.starts = timestamp_for_today();
                 randomize_vec(&mut self.words);
-                println!("Saving game data: {:?}", self);
                 return match serde_json::to_string(&self) {
                     Ok(game_data_string) => match game_store.insert(&self.slug, game_data_string) {
                         Ok(_) => Ok(self.words[0].to_owned()),

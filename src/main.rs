@@ -24,10 +24,10 @@ fn main(mut req: Request) -> Result<Response, Error> {
     match req.get_path() {
         "/favicon.png" => Ok(png_resp(include_bytes!("browser/images/favicon.png"))),
         "/card.png" => Ok(png_resp(include_bytes!("browser/images/card.png"))),
-        "/yourdle.svg" => Ok(text_resp(
-            mime::IMAGE_SVG,
-            include_str!("browser/images/yourdle.svg"),
-        )),
+        "/yourdle.svg" => Ok(svg_resp(include_str!("browser/images/yourdle.svg"))),
+        "/info.svg" => Ok(svg_resp(include_str!("browser/images/info.svg"))),
+        "/contrast.svg" => Ok(svg_resp(include_str!("browser/images/contrast.svg"))),
+        "/stats.svg" => Ok(svg_resp(include_str!("browser/images/stats.svg"))),
         "/style.css" => Ok(text_resp(
             mime::TEXT_CSS_UTF_8,
             include_str!("browser/style.css"),
@@ -35,22 +35,29 @@ fn main(mut req: Request) -> Result<Response, Error> {
         "/script.js" => Ok(js_resp(include_bytes!("browser/script.js"))),
         "/new.js" => Ok(js_resp(include_bytes!("browser/new.js"))),
         "/" => Ok(html_resp(include_str!("browser/index.html"))),
-        "/new" => {
-            match req.get_method() {
-                &Method::POST => {
-                    if let Ok(form) = req.take_body_json::<GameDataForm>() {
-                        if let Ok(mut game_data) = GameData::from_form(form) {
-                            if game_data.save().is_ok() {
-                                return Ok(Response::from_status(StatusCode::OK));
-                            }
+        "/feedback" => Ok(text_resp(mime::TEXT_PLAIN, "Report game page here")),
+        "/validate" => {
+            if let Ok(form) = req.take_body_json::<GameDataForm>() {
+                if GameData::check_not_exists(&form.game).is_ok() {
+                    return Ok(Response::from_status(StatusCode::OK));
+                }
+            }
+            Ok(Response::from_status(StatusCode::BAD_REQUEST))
+        }
+        "/new" => match req.get_method() {
+            &Method::POST => {
+                if let Ok(form) = req.take_body_json::<GameDataForm>() {
+                    if let Ok(mut game_data) = GameData::from_form(form) {
+                        if game_data.save().is_ok() {
+                            return Ok(Response::from_status(StatusCode::OK)
+                                .with_body_text_plain(&game_data.slug));
                         }
                     }
-                    Ok(Response::from_status(StatusCode::BAD_REQUEST))
                 }
-                _ => Ok(html_resp(include_str!("browser/new.html"))),
+                Ok(Response::from_status(StatusCode::BAD_REQUEST))
             }
-        }
-        "/report" => Ok(text_resp(mime::TEXT_PLAIN, "Report game page here")),
+            _ => Ok(html_resp(include_str!("browser/new.html"))),
+        },
         req_path => {
             let game_slug = match req_path[1..].find('/') {
                 Some(i) => &req_path[1..i],
@@ -59,13 +66,12 @@ fn main(mut req: Request) -> Result<Response, Error> {
             // Load game data.
             if let Ok(mut game_data) = game::GameData::load(game_slug) {
                 // Load today's word.
-                let (word, word_idx, total_words) = game_data.get_word().unwrap();
+                let (word, _word_idx, _total_words) = game_data.get_word().unwrap();
                 // Load game state.
                 let mut guesses = Guesses::load(
                     &state::get_from(game_slug, req.get_header_str("cookie").unwrap_or_default()),
                     word.len(),
                 );
-
                 // Record a guess, if the guess query parmeter is set.
                 if let Some(guess) = req.get_query_parameter("guess") {
                     if game_data.validate_word(guess) {
@@ -115,15 +121,17 @@ fn text_resp(mime_type: mime::Mime, body: &str) -> Response {
         .with_header(header::CACHE_CONTROL, LONG_CACHE)
         .with_body(body)
 }
-
-fn html_resp(body: &str) -> Response {
-    Response::from_status(StatusCode::OK).with_body_text_html(body)
-}
-
 fn png_resp(body: &[u8]) -> Response {
     byte_resp(mime::IMAGE_PNG, body)
+}
+fn svg_resp(body: &str) -> Response {
+    text_resp(mime::IMAGE_SVG, body)
 }
 
 fn js_resp(body: &[u8]) -> Response {
     byte_resp(mime::APPLICATION_JAVASCRIPT_UTF_8, body)
+}
+
+fn html_resp(body: &str) -> Response {
+    Response::from_status(StatusCode::OK).with_body_text_html(body)
 }

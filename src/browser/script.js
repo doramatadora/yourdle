@@ -172,7 +172,6 @@ document.addEventListener(
       default:
         if (
           !e.target.hasAttribute('target') &&
-          !e.target.hasAttribute('src') &&
           (e.target.classList.contains('close') ||
             !e.target.closest('#info,#stats'))
         ) {
@@ -185,7 +184,7 @@ document.addEventListener(
   false
 )
 
-if (gameSlug.length && !['new', 'report'].includes(gameSlug)) {
+if (gameSlug.length && !['new', 'feedback', 'validate'].includes(gameSlug)) {
   for (const btn of document.querySelectorAll('button').values()) {
     buttons[btn.dataset.key] = btn
     btn.addEventListener('click', e => {

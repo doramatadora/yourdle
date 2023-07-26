@@ -24,7 +24,7 @@ pub fn sanitize_as_words(text: String) -> Vec<String> {
     let unique_words: HashSet<String> = text
         // Replace whitespace and punctuation with a single space.
         .replace(|c: char| c.is_whitespace() || c.is_ascii_punctuation(), " ")
-        // Remove non-English alphabet characters.
+        // Remove non-ASCII alphabet characters.
         .replace(|c: char| !c.is_whitespace() && !c.is_ascii_alphabetic(), "")
         .to_uppercase()
         .trim()

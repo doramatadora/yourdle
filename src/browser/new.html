@@ -30,11 +30,12 @@
 
 <body>
   <header>
-    <div><a href="/" target="_self"><img src="/yourdle.svg" alt="Yourdle" alt="Yourdle" width="40" height="44" /></a>
+    <div><a href="/" target="_self"><img src="/yourdle.svg" alt="Yourdle" data-bubble width="40" height="44" /></a>
       <h1 class="logo">YOURDLE</h1>
     </div>
     <nav>
-      <a class="menu" title="How to play" id="showInfo" href="#">?</a>
+      <a class="menu" title="How to play" id="showInfo" href="#"><img src="/info.svg" alt="Info" width="20"
+          height="20" /></a>
     </nav>
   </header>
   <noscript>You need to enable JavaScript to run this app.</noscript>
@@ -46,9 +47,8 @@
       Upload a word list and create a new game. Share the link with your friends.
     </p>
     <p>
-      Your word list is shuffled. A random word is chosen every day.
-      You get 6 guesses to solve the daily word challenge. The color of the tiles will change to show how close each
-      guess was.
+      Every day, a random word is selected from the list.
+      You get 6 guesses to solve the challenge. Tile colors change based on the accuracy of each guess.
     </p>
     <div class="row">
       <div class="tile" data-state="correct">L</div>
@@ -72,38 +72,39 @@
     </div>
     <p>O is not in the word.</p>
     <hr />
-    <a class="menu" title="High contrast" id="colorMode" href="#">◑</a>
+    <a class="menu" title="High contrast" id="colorMode" href="#"><img src="/contrast.svg" alt="Contrast"
+      width="20" height="20" /></a>
   </div>
   <main>
     <article>
       <p>Create your own word game. Challenge your friends.</p>
     </article>
     <article>
-      <form action="" method="post" id="newGameForm">
+      <form id="newGameForm">
         <div class="input">
           <label for="game">Name your game</label>
           <input type="text" id="game" name="game" placeholder="A catchy 3-12 chars" required minlength="3"
             maxlength="12" />
         </div>
-        <span class="validation">Too short</span>
+        <div><span class="validation" data-validates="game">Too short</span></div>
         <div class="input">
           <label for="description">Describe it</label>
           <textarea id="description" name="description" placeholder="Introduce the game in 140 chars max" required
             minlength="10" maxlength="140"></textarea>
         </div>
-        <span class="validation">Too short</span>
+        <div><span class="validation" data-validates="description">Too short</span></div>
         <div class="input">
-          <label for="words">Word list</label>
+          <label for="words">Word list <span id="wordCount"></span></label>
           <textarea id="words" name="words" placeholder="7-365 words, 3-10 English letters per word" required
             minlength="25" maxlength="4000" pattern="^(?:\b[a-zA-Z]{3,10}\b\s*){7,}$"></textarea>
         </div>
-        <span class="validation">We need at least 7 words</span>
+        <div><span class="validation" data-validates="words">We need at least 7 words</span></div>
         <div class="hint">
           <a href="https://chat.openai.com" target="_blank">Ask an AI</a> to generate a list of
           words for you, e.g., <span>"Give me a list of 100 one-word culinary spices, each with under 10 letters"</span>
         </div>
         <hr />
-        <button id="make" class="cta flish" type="submit">Make it ✨</button>
+        <div><button id="make" class="cta flish" type="submit">Make it ✨</button></div>
       </form>
     </article>
   </main>

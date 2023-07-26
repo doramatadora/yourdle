@@ -53,7 +53,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-height: 95vh;
+  height: 100vh;
 }
 
 .row,
@@ -131,20 +131,21 @@ button.action {
 }
 
 .menu {
-  text-decoration: none;
   margin: 0 3px;
-  font-size: 1.2em;
-  border-radius: 3px;
   padding: 0 2px;
+  display: inline-block;
 }
 
-.menu:last-child {
-  font-size: 1.7em;
+.menu:hover {
+  transform: scale(1.1, 1.1);
+}
+
+.hiContrast #colorMode {
+  transform: scaleX(-1);
 }
 
 .tile[data-state="wrong"],
 button[data-state="wrong"],
-.hiContrast #colorMode,
 #share:visited,
 #share {
   border-color: #182931;
@@ -261,13 +262,16 @@ header {
   height: 40px;
 }
 
+img {
+  pointer-events: none;
+}
+
 header img {
   max-height: 40px;
 }
 
 footer {
   font-size: 0.8em;
-  height: 40px;
 }
 
 .footnote {
@@ -494,12 +498,12 @@ hr {
 }
 
 .input {
-  border-radius: 3px;
+  border-radius: 4px;
   background-color: #ffffff;
-  border: 1px solid #c4ccd3;
+  border: 2px solid #c4ccd3;
   min-height: 3.5em;
   position: relative;
-  margin: 1em auto;
+  margin-top: 1em;
 }
 
 .input:focus-within {
@@ -536,11 +540,12 @@ hr {
 
 .input>textarea {
   resize: vertical;
-  min-height: 5em;
+  min-height: 4.2em;
 }
 
 #words {
   text-transform: uppercase;
+  min-height: 6em;
 }
 
 .input>input::-webkit-input-placeholder,
@@ -561,14 +566,38 @@ hr {
 
 .hint {
   display: inline-block;
-  margin-bottom: 1em;
+  margin: 0.5em auto;
   font-size: 0.9em;
 }
 
 .hint::before {
   content: "\1F4A1";
-  /* Unicode for the lightbulb emoji */
   display: inline-block;
   margin-right: 8px;
-  /* Adjust the spacing between the emoji and the text */
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+.validation {
+  position: relative;
+  border-radius: 3px;
+  background-color: #b41757;
+  color: #ffffff;
+  font-size: 0.9em;
+  padding: 3px 6px;
+  float: right;
+  display: none;
+}
+
+.validation::before {
+  content: "";
+  position: absolute;
+  bottom: 70%;
+  right: 10px;
+  border-width: 10px;
+  border-style: solid;
+  border-color: transparent transparent #b41757 transparent;
 }
