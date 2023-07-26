@@ -8,6 +8,8 @@ const showInfo = document.getElementById('showInfo')
 const info = document.getElementById('info')
 const showStats = document.getElementById('showStats')
 const stats = document.getElementById('stats')
+const showFeedback = document.getElementById('showFeedback')
+const feedback = document.getElementById('feedback')
 const body = document.querySelector('body')
 const activeRow = document.getElementsByClassName('active')
 const clipboard = document.getElementById('clipboard')
@@ -25,7 +27,7 @@ const opn = el => {
 }
 
 const closeAll = () => {
-  ;[info, stats, announcer].forEach(el =>
+  ;[info, stats, announcer, feedback].forEach(el =>
     el ? (el.style.display = 'none') : () => {}
   )
 }
@@ -149,7 +151,8 @@ const doClipboard = text =>
 document.addEventListener('keydown', e => {
   const key = e.key.toLowerCase()
   if (key === 'escape' || key === 'esc') closeAll()
-  else if (buttons[key]) buttons[key].click()
+  else if (!e.target.closest('#info,#stats,#feedback') && buttons[key])
+    buttons[key].click()
 })
 
 document.addEventListener(
@@ -179,15 +182,20 @@ document.addEventListener(
         e.preventDefault()
         opn(info)
         break
+      case showFeedback:
+        e.preventDefault()
+        opn(feedback)
+        break
       case showStats:
         e.preventDefault()
         updateStats()
         break
       default:
+        console.log(e.target)
         if (
           !e.target.hasAttribute('target') &&
           (e.target.classList.contains('close') ||
-            !e.target.closest('#info,#stats'))
+            !e.target.closest('#info,#stats,#feedback'))
         ) {
           e.preventDefault()
           closeAll()

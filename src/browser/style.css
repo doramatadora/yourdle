@@ -221,6 +221,10 @@ article,
   max-width: 400px;
 }
 
+.modal .input {
+  width: 100%;
+}
+
 article {
   margin: 1em auto;
 }
