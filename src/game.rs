@@ -122,6 +122,7 @@ impl GameData {
 
 impl Display for GameData {
     fn fmt(&self, f: &mut Formatter) -> FmtResult {
+        let word_idx = get_days_since(self.starts);
         write!(
             f,
             "{}",
@@ -130,6 +131,8 @@ impl Display for GameData {
                 .replace("{GAME}", &self.game)
                 .replace("{DESCRIPTION}", &self.description)
                 .replace("{SLUG}", &self.slug)
+                .replace("{CURRENT}", &word_idx.to_string())
+                .replace("{TOTAL}", &self.words.len().to_string())
         )
     }
 }

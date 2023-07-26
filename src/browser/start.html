@@ -30,12 +30,11 @@
     <div>
       <a href="/" target="_self"><img src="/yourdle.svg" alt="Yourdle" data-bubble width="40" height="44" /></a>
       <h1 class="h3">{GAME}</h1>
+      <input type="hidden" id="gameTitle" value="{GAME}" />
     </div>
     <nav>
       <a class="menu" title="How to play" id="showInfo" href="#"><img src="/info.svg" alt="Info" width="20"
           height="20" /></a>
-      <a class="menu" title="Toggle high contrast mode" id="colorMode" href="#"><img src="/contrast.svg" alt="Contrast"
-          width="20" height="20" /></a>
       <a class="menu" title="Game statistics" id="showStats" href="#"><img src="/stats.svg" alt="Stats" width="20"
           height="20" /></a>
     </nav>
@@ -72,7 +71,9 @@
     </div>
     <p>The letter O is not in the word.</p>
     <p class="footnote">
-      <a href="/report?game={SLUG}" target="_self">Report game</a>
+      <span>No. {CURRENT}/{TOTAL}</span>
+      <a class="menu" title="Toggle high contrast mode" id="colorMode" href="#"><img src="/contrast.svg" alt="Contrast"
+        width="20" height="20" /></a>
       <a href="/new" class="diy" target="_self">Create your own</a>
     </p>
   </div>
@@ -97,7 +98,7 @@
         <h5>Best streak</h5>
       </div>
     </div>
-    <a id="share" href="#" target="_blank">Share 💪</a>
+    <a id="share" class="shareStats" href="#" target="_blank">Share 💪</a>
     <h3 class="h4">Guess distribution</h3>
     <div class="row">
       <div class="dist">

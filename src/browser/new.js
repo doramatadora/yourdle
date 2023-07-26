@@ -1,4 +1,9 @@
 const newForm = document.getElementById('newGameForm')
+const createdSuccessfully = document.getElementById('createdSuccessfully')
+const wordCount = document.getElementById('wordCount')
+const submit = document.getElementById('make')
+const gameLink = document.getElementById('gameLink')
+
 const inputs = ['game', 'description', 'words'].reduce((acc, input) => {
   acc[input] = {
     field: document.getElementById(input),
@@ -6,20 +11,6 @@ const inputs = ['game', 'description', 'words'].reduce((acc, input) => {
   }
   return acc
 }, {})
-const wordCount = document.getElementById('wordCount')
-const submit = document.getElementById('make')
-
-inputs.game.debounced = 3000
-inputs.words.debounced = 8000
-
-// See https://davidwalsh.name/javascript-debounce-
-function debounce (func, delay) {
-  let timer
-  return function (...args) {
-    clearTimeout(timer)
-    timer = setTimeout(() => func.apply(this, args), delay)
-  }
-}
 
 const validationMessage = ({ validation }, message) => {
   validation.innerText = message
@@ -81,11 +72,7 @@ inputs.words.validate = () => {
 }
 
 const processEventTargets = (listenerAction = 'addEventListener') => {
-  Object.values(inputs).forEach(({ field, validate, debounced }) => {
-    field[listenerAction](
-      'input',
-      debounced ? debounce(validate, debounced) : validate
-    )
+  Object.values(inputs).forEach(({ field, validate }) => {
     field[listenerAction]('change', validate)
   })
 }
@@ -94,25 +81,36 @@ processEventTargets()
 
 submit.addEventListener('click', async e => {
   e.preventDefault()
-  // Validate everything once more.
+  processEventTargets('removeEventListener')
+  // Validate everything and return early on failure.
   const validationResults = await Promise.all(
     Object.values(inputs).map(async ({ validate }) => await validate())
   )
-  if (validationResults.some(r => !r)) return
+  if (validationResults.some(r => !r)) return processEventTargets()
 
-  processEventTargets('removeEventListener')
-
+  const gameData = {
+    game: inputs.game.field.value.trim(),
+    description: inputs.description.field.value.trim(),
+    words: inputs.words.field.value.trim()
+  }
+  // Attempt to create the game.
   const res = await fetch('/new', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      game: inputs.game.field.value.trim(),
-      description: inputs.description.field.value.trim(),
-      words: inputs.words.field.value.trim()
-    })
+    body: JSON.stringify(gameData)
   })
-  if (!res.ok) return announce(`Something went wrong 🥲\nTry again later`)
-  const slug = await res.text()
+  if (!res.ok) {
+    processEventTargets()
+    return announce(`Something went wrong 🥲\nTry again later`)
+  }
+  const gameSlug = await res.text()
+  const gameUrl = `${window.location.origin}/${gameSlug}`
+  gameLink.href = gameUrl
+  gameLink.innerText = `${window.location.host}/${gameSlug}`
+  clipboard.value = [
+    `I made a word game! Check out "${gameData.game}" at:`,
+    gameUrl
+  ].join('\n')
   newForm.remove()
-  console.warn({ slug })
+  createdSuccessfully.style.display = 'block'
 })

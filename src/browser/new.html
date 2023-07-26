@@ -71,43 +71,53 @@
       <div class="tile">E</div>
     </div>
     <p>O is not in the word.</p>
-    <hr />
-    <a class="menu" title="High contrast" id="colorMode" href="#"><img src="/contrast.svg" alt="Contrast"
-      width="20" height="20" /></a>
+    <div class="footnote">
+      <span></span>
+      <a class="menu" title="High contrast" id="colorMode" href="#"><img src="/contrast.svg" alt="Contrast" width="20"
+          height="20" /></a>
+      <span></span>
+    </div>
   </div>
   <main>
-    <article>
+    <article id="newGameForm">
       <p>Create your own word game. Challenge your friends.</p>
+      <div class="input">
+        <label for="game">Name your game</label>
+        <input type="text" id="game" name="game" placeholder="A catchy 3-12 chars" required minlength="3"
+          maxlength="12" />
+      </div>
+      <div><span class="validation" data-validates="game">Too short</span></div>
+      <div class="input">
+        <label for="description">Describe it</label>
+        <textarea id="description" name="description" placeholder="Introduce the game in 140 chars max" required
+          minlength="10" maxlength="140"></textarea>
+      </div>
+      <div><span class="validation" data-validates="description">Too short</span></div>
+      <div class="input">
+        <label for="words">Word list <span id="wordCount"></span></label>
+        <textarea id="words" name="words" placeholder="7-365 words, 3-10 English letters per word" required
+          minlength="25" maxlength="4000" pattern="^(?:\b[a-zA-Z]{3,10}\b\s*){7,}$"></textarea>
+      </div>
+      <div><span class="validation" data-validates="words">We need at least 7 words</span></div>
+      <div class="hint">
+        <a href="https://chat.openai.com" target="_blank">Ask an AI</a> to generate a list of
+        words for you, e.g., <span>"Give me a list of 100 one-word culinary spices, each with under 10 letters"</span>
+      </div>
+      <hr />
+      <div><button id="make" class="cta flish" type="submit">Make it ✨</button></div>
     </article>
-    <article>
-      <form id="newGameForm">
-        <div class="input">
-          <label for="game">Name your game</label>
-          <input type="text" id="game" name="game" placeholder="A catchy 3-12 chars" required minlength="3"
-            maxlength="12" />
-        </div>
-        <div><span class="validation" data-validates="game">Too short</span></div>
-        <div class="input">
-          <label for="description">Describe it</label>
-          <textarea id="description" name="description" placeholder="Introduce the game in 140 chars max" required
-            minlength="10" maxlength="140"></textarea>
-        </div>
-        <div><span class="validation" data-validates="description">Too short</span></div>
-        <div class="input">
-          <label for="words">Word list <span id="wordCount"></span></label>
-          <textarea id="words" name="words" placeholder="7-365 words, 3-10 English letters per word" required
-            minlength="25" maxlength="4000" pattern="^(?:\b[a-zA-Z]{3,10}\b\s*){7,}$"></textarea>
-        </div>
-        <div><span class="validation" data-validates="words">We need at least 7 words</span></div>
-        <div class="hint">
-          <a href="https://chat.openai.com" target="_blank">Ask an AI</a> to generate a list of
-          words for you, e.g., <span>"Give me a list of 100 one-word culinary spices, each with under 10 letters"</span>
-        </div>
-        <hr />
-        <div><button id="make" class="cta flish" type="submit">Make it ✨</button></div>
-      </form>
+    <article id="createdSuccessfully">
+      <h2>Ready to play</h2>
+      <p>Congratulations, you've created your own word game! Share this link with your friends (or click to play now):
+      </p>
+      <p>✨ <a id="gameLink" href="https://yourdle.edgecompute.app" target="_self">yourdle.edgecompute.app</a> ✨</p>
+      <p><a id="share" class="cta flish" href="#" target="_blank">Share 🔗</a></p>
+      <div class="footnote">
+        <a href="/new" class="diy" target="_self">Make another</a>
+      </div>
     </article>
   </main>
+  <textarea id="clipboard"></textarea>
   <footer>
     <p>
       Built by <a href="https://doramilitaru.com" target="_blank">Dora</a> 👩🏻‍🔧 with <a

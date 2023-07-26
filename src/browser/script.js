@@ -1,6 +1,8 @@
 const TRIES = 6
 const colorMode = document.getElementById('colorMode')
 const share = document.getElementById('share')
+const shareThis = document.getElementById('shareThis')
+const gameTitle = document.getElementById('gameTitle')
 const announcer = document.getElementById('announcer')
 const showInfo = document.getElementById('showInfo')
 const info = document.getElementById('info')
@@ -12,6 +14,7 @@ const clipboard = document.getElementById('clipboard')
 const buttons = {}
 
 const [, gameSlug] = window.location.pathname.split('/')
+const origin = window.location.origin
 
 if (localStorage.getItem('hiContrast') === 'true')
   body.classList.add('hiContrast')
@@ -100,11 +103,16 @@ const updateStats = () => {
         near: '🟡',
         wrong: '⚫'
       }
-      const text = [`I took ${state.outcome.length} guesses:`]
+
+      const text = [
+        `I took ${state.outcome.length} ${
+          state.outcome.length === 1 ? `guess` : `guesses`
+        } at today's ${gameTitle.value}:`
+      ]
       state.outcome.forEach(o => {
         text.push(o[1].map(outcome => c[outcome]).join(' '))
       })
-      text.push(`https://yourdle.edgecompute.app/${gameSlug}`)
+      text.push(`${origin}/${gameSlug}`)
       clipboard.value = text.join('\n')
       share.style.display = 'block'
     } else share.style.display = 'none'
@@ -151,6 +159,15 @@ document.addEventListener(
       case share:
         e.preventDefault()
         doClipboard(clipboard.value)
+        break
+      case shareThis:
+        e.preventDefault()
+        doClipboard(
+          [
+            `Check out this fun word game, ${gameTitle.value}:`,
+            `${origin}/${window.location.pathname}`
+          ].join('\n')
+        )
         break
       case colorMode:
         e.preventDefault()

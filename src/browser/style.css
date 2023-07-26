@@ -146,8 +146,8 @@ button.action {
 
 .tile[data-state="wrong"],
 button[data-state="wrong"],
-#share:visited,
-#share {
+.shareStats:visited,
+.shareStats {
   border-color: #182931;
   background-color: #182931;
   color: #ffffff;
@@ -175,7 +175,7 @@ button[data-state="correct"],
   background-color: #04b2e1;
 }
 
-#share {
+.shareStats   {
   display: none;
   font-size: 1.2em;
   padding: 10px;
@@ -183,8 +183,8 @@ button[data-state="correct"],
   text-decoration: none;
 }
 
-#share:active,
-#share:hover {
+.shareStats:active,
+.shareStats:hover {
   border-color: #2b4450;
   background-color: #2b4450;
 }
@@ -275,7 +275,6 @@ footer {
 }
 
 .footnote {
-  color: #7a848d;
   font-size: 0.9em;
   border-top: 1px solid #ebf0f3;
   padding-top: 1em;
@@ -576,7 +575,7 @@ hr {
   margin-right: 8px;
 }
 
-form {
+#newGameForm {
   display: flex;
   flex-direction: column;
 }
@@ -600,4 +599,15 @@ form {
   border-width: 10px;
   border-style: solid;
   border-color: transparent transparent #b41757 transparent;
+}
+
+#createdSuccessfully {
+  display: none;
+}
+
+#share.cta {
+  text-transform: uppercase;
+  text-align: center;
+  width: 100%;
+  margin-top: 1em;
 }
