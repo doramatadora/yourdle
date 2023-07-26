@@ -1,4 +1,3 @@
-use crate::utils::{get_days_since, timestamp_for_today};
 use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter, Result as FmtResult};
 
@@ -51,13 +50,12 @@ impl Guess {
 #[derive(Serialize, Deserialize, Default, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct Guesses {
-    #[serde(default = "timestamp_for_today")]
-    pub today: i64,
+    pub today: String,
     pub today_length: usize,
     pub outcome: Vec<Guess>,
     pub distribution: Vec<u16>,
-    pub last_win: i64,
-    pub last_loss: i64,
+    pub last_win: String,
+    pub last_loss: String,
     pub max_streak: u16,
     pub streak: u16,
     pub games: u16,
@@ -65,14 +63,14 @@ pub struct Guesses {
 
 impl Guesses {
     // Initialize a new Guesses struct from state.
-    pub fn load(state: &str, today_length: usize) -> Guesses {
+    pub fn load(d: &str, state: &str, today_length: usize) -> Guesses {
         let mut guesses: Guesses = serde_json::from_str(state).unwrap_or_default();
         guesses.today_length = today_length;
         if guesses.distribution.len() != TRIES {
             guesses.distribution = vec![0; TRIES];
         }
         // Verify if the loaded game state is current.
-        if get_days_since(guesses.today) != 0 {
+        if guesses.today != d  {
             // Record an abandoned session as a loss.
             if guesses.outcome.len() > 0
                 && guesses.outcome.len() < TRIES
@@ -80,10 +78,9 @@ impl Guesses {
             {
                 guesses.lose();
             }
-            guesses.today = timestamp_for_today();
+            guesses.today = d.to_owned();
             guesses.outcome.clear();
         }
-
         guesses
     }
 

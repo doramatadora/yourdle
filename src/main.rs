@@ -1,3 +1,4 @@
+use chrono::Utc;
 use fastly::http::{header, Method, StatusCode};
 use fastly::{mime, Error, Request, Response};
 mod game;
@@ -66,9 +67,12 @@ fn main(mut req: Request) -> Result<Response, Error> {
             // Load game data.
             if let Ok(mut game_data) = game::GameData::load(game_slug) {
                 // Load today's word.
-                let (word, _word_idx, _total_words) = game_data.get_word().unwrap();
+                let (word, _, _) = game_data.get_word().unwrap();
+                // Get the date in yyyy-mm-dd format.
+                let today: &str = &Utc::now().to_rfc3339()[..10];
                 // Load game state.
                 let mut guesses = Guesses::load(
+                    today,
                     &state::get_from(game_slug, req.get_header_str("cookie").unwrap_or_default()),
                     word.len(),
                 );
