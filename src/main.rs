@@ -10,7 +10,8 @@ use game::{GameData, GameDataForm};
 use guess::{Guess, Guesses};
 
 // const LONG_CACHE: &str = "public, max-age=21600, immutable";
-const LONG_CACHE: &str = "private, no-cache, max-age=0, no-store";
+const LONG_CACHE: &str = "public, max-age=3600, must-revalidate";
+// const LONG_CACHE: &str = "private, no-cache, max-age=0, no-store";
 
 #[fastly::main]
 fn main(mut req: Request) -> Result<Response, Error> {
