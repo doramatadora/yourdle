@@ -10,6 +10,8 @@ const showStats = document.getElementById('showStats')
 const stats = document.getElementById('stats')
 const showFeedback = document.getElementById('showFeedback')
 const feedback = document.getElementById('feedback')
+const feedbackText = document.getElementById('feedbackText')
+const sendFeedback = document.getElementById('sendFeedback')
 const body = document.querySelector('body')
 const activeRow = document.getElementsByClassName('active')
 const clipboard = document.getElementById('clipboard')
@@ -122,6 +124,29 @@ const updateStats = () => {
   opn(stats)
 }
 
+const submitFeedback = () => {
+  const fb = feedbackText.value.trim()
+  if (fb.length < 10 || fb.length > 140) return
+  const clearAndClose = msg => {
+    feedbackText.value = ''
+    closeAll()
+    announce(msg)
+  }
+  fetch('/feedback', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      path: gameSlug,
+      feedback: fb
+    })
+  })
+    .then(res => {
+      if (!res.ok) throw new Error(res.status)
+      clearAndClose(`Thank you!`)
+    })
+    .catch(() => clearAndClose(`Something went wrong 🥲\nTry again later`))
+}
+
 const fallbackCopyTextToClipboard = text => {
   clipboard.value = text
   clipboard.focus()
@@ -158,56 +183,60 @@ document.addEventListener('keydown', e => {
 document.addEventListener(
   'click',
   e => {
-    switch (e.target) {
-      case share:
-        e.preventDefault()
-        doClipboard(clipboard.value)
-        break
-      case shareThis:
-        e.preventDefault()
-        doClipboard(
-          `Check out this fun word game, ${gameTitle.value}: ${origin}/${gameSlug}`
-        )
-        break
-      case colorMode:
-        e.preventDefault()
-        e.target.blur()
-        body.classList.toggle('hiContrast')
-        localStorage.setItem(
-          'hiContrast',
-          body.classList.contains('hiContrast')
-        )
-        break
-      case showInfo:
-        e.preventDefault()
-        opn(info)
-        break
-      case showFeedback:
-        e.preventDefault()
-        opn(feedback)
-        break
-      case showStats:
-        e.preventDefault()
-        updateStats()
-        break
-      default:
-        console.log(e.target)
-        if (
-          !e.target.hasAttribute('target') &&
-          (e.target.classList.contains('close') ||
-            !e.target.closest('#info,#stats,#feedback'))
-        ) {
+    if (!e.target.hasAttribute('target')) {
+      switch (e.target) {
+        case share:
           e.preventDefault()
-          closeAll()
-        }
-        break
+          doClipboard(clipboard.value)
+          break
+        case shareThis:
+          e.preventDefault()
+          doClipboard(
+            `Check out this fun word game, ${gameTitle.value}: ${origin}/${gameSlug}`
+          )
+          break
+        case colorMode:
+          e.preventDefault()
+          e.target.blur()
+          body.classList.toggle('hiContrast')
+          localStorage.setItem(
+            'hiContrast',
+            body.classList.contains('hiContrast')
+          )
+          break
+        case showInfo:
+          e.preventDefault()
+          opn(info)
+          break
+        case showStats:
+          e.preventDefault()
+          updateStats()
+          break
+        case showFeedback:
+          e.preventDefault()
+          opn(feedback)
+          break
+        case sendFeedback:
+          e.preventDefault()
+          submitFeedback()
+          break
+        default:
+          if (
+            e.target.classList.contains('close') ||
+            !e.target.closest('#info,#stats,#feedback')
+          ) {
+            e.preventDefault()
+            closeAll()
+          }
+          break
+      }
     }
   },
   false
 )
 
-if (gameSlug.length && !['new', 'feedback', 'validate'].includes(gameSlug)) {
-  for (const btn of document.querySelectorAll('button').values()) {
+if (!['new', 'feedback', 'validate'].includes(gameSlug)) {
+  for (const btn of document.querySelectorAll('button[data-key]').values()) {
     buttons[btn.dataset.key] = btn
     btn.addEventListener('click', e => {
       e.stopPropagation()

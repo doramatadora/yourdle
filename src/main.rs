@@ -1,6 +1,6 @@
 use chrono::Utc;
 use fastly::http::{header, Method, StatusCode};
-use fastly::{mime, Error, Request, Response};
+use fastly::{mime, Error, KVStore, Request, Response};
 mod game;
 mod guess;
 mod state;
@@ -36,7 +36,24 @@ fn main(mut req: Request) -> Result<Response, Error> {
         "/script.js" => Ok(js_resp(include_bytes!("browser/script.js"))),
         "/new.js" => Ok(js_resp(include_bytes!("browser/new.js"))),
         "/" => Ok(html_resp(include_str!("browser/index.html"))),
-        "/feedback" => Ok(text_resp(mime::TEXT_PLAIN, "Report game page here")),
+        "/feedback" => {
+            if req.get_method() == &Method::POST {
+                if let Ok(Some(mut feedback_store)) = KVStore::open("feedback-yourdle") {
+                    let feedback = req.take_body_str();
+                    if let Ok(_) = feedback_store.insert(
+                        &format!(
+                            "{}-{}",
+                            Utc::now().timestamp(),
+                            req.get_client_ip_addr().unwrap().to_string()
+                        ),
+                        utils::truncate_to_max_length(&feedback, 300),
+                    ) {
+                        return Ok(Response::from_status(StatusCode::OK));
+                    }
+                }
+            }
+            Ok(Response::from_status(StatusCode::BAD_REQUEST))
+        }
         "/validate" => {
             if let Ok(form) = req.take_body_json::<GameDataForm>() {
                 if GameData::check_not_exists(&form.game).is_ok() {

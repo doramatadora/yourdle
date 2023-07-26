@@ -29,3 +29,7 @@ service_id = "IV46ATG54AR2sdPXjQ9NG6"
     [[local_server.kv_stores.yourdle]]
       file = "./.dora/setup/finalleigh.json"
       key = "finalleigh"
+
+    [[local_server.kv_stores.feedback-yourdle]]
+      file = "./.dora/setup/pops.json"
+      key = "pops"
