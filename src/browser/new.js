@@ -24,14 +24,13 @@ const hideValidation = ({ validation }) => {
 }
 
 inputs.game.validate = async () => {
-  if (inputs.game.field.value.trim().length < 3)
+  const game = inputs.game.field.value.trim()
+  if (game.length < 3)
     return validationMessage(inputs.game, 'too short')
   const { ok } = await fetch('/validate', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      game: inputs.game.field.value.trim()
-    })
+    body: JSON.stringify({ game })
   })
   return ok
     ? hideValidation(inputs.game)
@@ -107,10 +106,7 @@ submit.addEventListener('click', async e => {
   const gameUrl = `${window.location.origin}/${gameSlug}`
   gameLink.href = gameUrl
   gameLink.innerText = `${window.location.host}/${gameSlug}`
-  clipboard.value = [
-    `I made a word game! Check out "${gameData.game}" at:`,
-    gameUrl
-  ].join('\n')
+  clipboard.value = `I made a word game! Check out "${gameData.game}" at: ${gameUrl}`
   newForm.remove()
   createdSuccessfully.style.display = 'block'
 })

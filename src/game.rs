@@ -109,6 +109,14 @@ impl GameData {
     // Check the game doesn't already exist.
     pub fn check_not_exists(game: &str) -> Result<String, &str> {
         let slug = slugify(&game);
+        // Handle reserved routes first.
+        if vec![
+            "new".to_string(),
+            "validate".to_string(),
+            "feedback".to_string(),
+        ].contains(&slug) {
+            return Err("Reserved route");
+        }
         match KVStore::open(KV_STORE_NAME) {
             Ok(Some(game_store)) => match game_store.lookup(&slug) {
                 Ok(None) => Ok(slug),

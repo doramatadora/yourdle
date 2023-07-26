@@ -163,10 +163,7 @@ document.addEventListener(
       case shareThis:
         e.preventDefault()
         doClipboard(
-          [
-            `Check out this fun word game, ${gameTitle.value}:`,
-            `${origin}/${window.location.pathname}`
-          ].join('\n')
+          `Check out this fun word game, ${gameTitle.value}: ${origin}/${gameSlug}`
         )
         break
       case colorMode:
