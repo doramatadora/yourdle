@@ -1,6 +1,9 @@
+use crate::utils;
+use fastly::KVStore;
 use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter, Result as FmtResult};
 
+const KV_STORE_NAME: &str = "yourdle-stats";
 pub const TRIES: usize = 6;
 
 #[derive(Serialize, Deserialize, Clone, Copy, PartialEq, Debug)]
@@ -63,14 +66,25 @@ pub struct Guesses {
 
 impl Guesses {
     // Initialize a new Guesses struct from state.
-    pub fn load(d: &str, state: &str, today_length: usize) -> Guesses {
-        let mut guesses: Guesses = serde_json::from_str(state).unwrap_or_default();
-        guesses.today_length = today_length;
+    pub fn load(game: &str, user_id: &str, today_word_length: usize) -> Guesses {
+        // Retrieve saved stats from KV Store.
+        let key = format!("{}-{}", game, user_id);
+        let saved_stats = match KVStore::open(KV_STORE_NAME) {
+            Ok(Some(stats_store)) => match stats_store.lookup_str(&key) {
+                Ok(Some(stats)) => stats,
+                _ => "".to_owned(),
+            },
+            _ => "".to_owned(),
+        };
+        // Initialize Guesses struct.
+        let mut guesses: Guesses = serde_json::from_str(&saved_stats).unwrap_or_default();
+        guesses.today_length = today_word_length;
         if guesses.distribution.len() != TRIES {
             guesses.distribution = vec![0; TRIES];
         }
         // Verify if the loaded game state is current.
-        if guesses.today != d  {
+        let today = utils::date_iso8601();
+        if guesses.today != today {
             // Record an abandoned session as a loss.
             if guesses.outcome.len() > 0
                 && guesses.outcome.len() < TRIES
@@ -78,23 +92,29 @@ impl Guesses {
             {
                 guesses.lose();
             }
-            guesses.today = d.to_owned();
+            guesses.today = today.to_owned();
             guesses.outcome.clear();
         }
         guesses
     }
 
     // Record a guess.
-    pub fn update(&mut self, guess: Guess) {
+    pub fn update(&mut self, game: &str, user_id: &str, guess: Guess) -> Result<(), fastly::Error> {
         // Record guess.
         self.outcome.push(guess);
-
-        // Update statistics.
+        // Update outcome.
         if self.outcome.last().unwrap().is_win() {
             self.win();
         } else if self.outcome.len() == TRIES {
             self.lose();
         }
+        // Save new game stats.
+        let mut stats_store = KVStore::open(KV_STORE_NAME)?.unwrap();
+        stats_store.insert(
+            &format!("{}-{}", game, user_id),
+            serde_json::to_string(&self)?,
+        )?;
+        Ok(())
     }
 
     // Update win statistics.
@@ -113,11 +133,6 @@ impl Guesses {
         self.last_loss = self.today.to_owned();
         self.streak = 0;
         self.games += 1;
-    }
-
-    // Output as JSON string.
-    pub fn json(&self) -> String {
-        serde_json::to_string(&self).unwrap_or_default()
     }
 }
 

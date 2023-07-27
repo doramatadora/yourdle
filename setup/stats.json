@@ -1,0 +1,27 @@
+{
+  "today": "2023-07-27",
+  "todayLength": 3,
+  "outcome": [
+    [
+      "LCY",
+      [
+        "wrong",
+        "correct",
+        "wrong"
+      ]
+    ]
+  ],
+  "distribution": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "lastWin": "",
+  "lastLoss": "",
+  "maxStreak": 0,
+  "streak": 0,
+  "games": 0
+}

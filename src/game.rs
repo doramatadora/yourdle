@@ -1,5 +1,5 @@
 use crate::utils::{
-    get_days_since, randomize_vec, sanitize_as_words, timestamp_for_today, truncate_to_max_length,
+    get_days_since, randomize_vec, sanitize_as_words, timestamp_now, truncate_to_chars,
 };
 use el_slugify::slugify;
 use fastly::KVStore;
@@ -14,7 +14,7 @@ pub struct GameData {
     pub slug: String,
     pub description: String,
     words: Vec<String>,
-    #[serde(default = "timestamp_for_today")]
+    #[serde(default = "timestamp_now")]
     starts: i64,
 }
 
@@ -39,35 +39,17 @@ impl GameData {
         if words.len() < 7 {
             return Err("Must have at least 7 unique words");
         }
-        let game = truncate_to_max_length(&form.game, 12);
+        let game = truncate_to_chars(&form.game, 12);
         if GameData::check_not_exists(&game).is_err() {
             return Err("Game already exists");
         }
         Ok(GameData {
             game: game.to_string(),
             slug: slugify(&game),
-            description: truncate_to_max_length(&description, 140).to_string(),
+            description: truncate_to_chars(&description, 140).to_string(),
             words,
-            starts: timestamp_for_today(),
+            starts: timestamp_now(),
         })
-    }
-
-    // Save the game data to KV store – randomize words, start the game today and return the first word.
-    pub fn save(&mut self) -> Result<String, &str> {
-        match KVStore::open(KV_STORE_NAME) {
-            Ok(Some(mut game_store)) => {
-                self.starts = timestamp_for_today();
-                randomize_vec(&mut self.words);
-                return match serde_json::to_string(&self) {
-                    Ok(game_data_string) => match game_store.insert(&self.slug, game_data_string) {
-                        Ok(_) => Ok(self.words[0].to_owned()),
-                        _ => Err("Could not save game data"),
-                    },
-                    _ => Err("Could not serialize game data"),
-                };
-            }
-            _ => Err("Could not open KV store"),
-        }
     }
 
     // Load the game data from KV store.
@@ -77,6 +59,24 @@ impl GameData {
                 Ok(Some(value)) => Ok(serde_json::from_str::<GameData>(&value).unwrap()),
                 _ => Err("Could not load game data"),
             },
+            _ => Err("Could not open KV store"),
+        }
+    }
+
+    // Save the game data to KV store – randomize words, start the game today and return the first word.
+    pub fn save(&mut self) -> Result<String, &str> {
+        match KVStore::open(KV_STORE_NAME) {
+            Ok(Some(mut game_store)) => {
+                self.starts = timestamp_now();
+                randomize_vec(&mut self.words);
+                return match serde_json::to_string(&self) {
+                    Ok(game_data_string) => match game_store.insert(&self.slug, game_data_string) {
+                        Ok(_) => Ok(self.words[0].to_owned()),
+                        _ => Err("Could not save game data"),
+                    },
+                    _ => Err("Could not serialize game data"),
+                };
+            }
             _ => Err("Could not open KV store"),
         }
     }

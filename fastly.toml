@@ -15,21 +15,13 @@ service_id = "IV46ATG54AR2sdPXjQ9NG6"
   [local_server.kv_stores]
 
     [[local_server.kv_stores.yourdle]]
-      file = "./.dora/setup/pops.json"
+      file = "./setup/pops.json"
       key = "pops"
-
-    [[local_server.kv_stores.yourdle]]
-      file = "./.dora/setup/presidentify.json"
-      key = "presidentify"
-
-    [[local_server.kv_stores.yourdle]]
-      file = "./.dora/setup/capitals.json"
-      key = "capitals"
-
-    [[local_server.kv_stores.yourdle]]
-      file = "./.dora/setup/finalleigh.json"
-      key = "finalleigh"
 
     [[local_server.kv_stores.feedback-yourdle]]
-      file = "./.dora/setup/pops.json"
-      key = "pops"
+      file = "./setup/feedback.json"
+      key = "1690380492-f283dbe6-306f-402a-af8c-1c3ad87b1db3"
+
+    [[local_server.kv_stores.yourdle-stats]]
+      file = "./setup/stats.json"
+      key = "pops-1690380492-f283dbe6-306f-402a-af8c-1c3ad87b1db3"

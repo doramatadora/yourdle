@@ -11,11 +11,10 @@ publish = false
 debug = 1
 
 [dependencies]
-base64 = "0.21.2"
 chrono = "0.4.26"
 el-slugify = "0.1.1"
 fastly = "0.9.5"
 rand = "0.8.5"
-rustrict = "0.7.7"
-serde = { version = "1.0.175", features = ["derive"] }
-serde_json = "1.0.103"
+uuid = { version = "1.4.1", features = ["v4", "fast-rng"] }
+serde = { version = "1.0.176", features = ["derive"] }
+serde_json = "1.0.104"
