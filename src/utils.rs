@@ -1,5 +1,4 @@
 use chrono::{TimeZone, Utc};
-use rand::seq::SliceRandom;
 use std::collections::HashSet;
 
 // Returns the current timestamp.
@@ -27,12 +26,6 @@ pub fn truncate_to_chars(s: &str, max_len: usize) -> &str {
     } else {
         s
     }
-}
-
-// Shuffles a vector of strings.
-pub fn randomize_vec(strings: &mut Vec<String>) {
-    let mut rng = rand::thread_rng();
-    strings.shuffle(&mut rng);
 }
 
 // Takes a string of words and returns a vector of unique words.

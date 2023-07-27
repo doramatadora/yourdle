@@ -18,7 +18,7 @@ service_id = "IV46ATG54AR2sdPXjQ9NG6"
       file = "./setup/pops.json"
       key = "pops"
 
-    [[local_server.kv_stores.feedback-yourdle]]
+    [[local_server.kv_stores.yourdle-feedback]]
       file = "./setup/feedback.json"
       key = "1690380492-f283dbe6-306f-402a-af8c-1c3ad87b1db3"
 

@@ -1,6 +1,4 @@
-use crate::utils::{
-    get_days_since, randomize_vec, sanitize_as_words, timestamp_now, truncate_to_chars,
-};
+use crate::utils::{get_days_since, sanitize_as_words, timestamp_now, truncate_to_chars};
 use el_slugify::slugify;
 use fastly::KVStore;
 use serde::{Deserialize, Serialize};
@@ -68,7 +66,7 @@ impl GameData {
         match KVStore::open(KV_STORE_NAME) {
             Ok(Some(mut game_store)) => {
                 self.starts = timestamp_now();
-                randomize_vec(&mut self.words);
+                fastrand::shuffle(&mut self.words);
                 return match serde_json::to_string(&self) {
                     Ok(game_data_string) => match game_store.insert(&self.slug, game_data_string) {
                         Ok(_) => Ok(self.words[0].to_owned()),
@@ -114,7 +112,9 @@ impl GameData {
             "new".to_string(),
             "validate".to_string(),
             "feedback".to_string(),
-        ].contains(&slug) {
+        ]
+        .contains(&slug)
+        {
             return Err("Reserved route");
         }
         match KVStore::open(KV_STORE_NAME) {

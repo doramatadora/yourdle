@@ -179,6 +179,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "fastrand"
+version = "2.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6999dc1837253364c2ebb0704ba97994bd874e8f195d665c50b7548f6ea92764"
+
+[[package]]
 name = "fnv"
 version = "1.0.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -749,7 +755,7 @@ dependencies = [
  "chrono",
  "el-slugify",
  "fastly",
- "rand",
+ "fastrand",
  "serde",
  "serde_json",
  "uuid",
