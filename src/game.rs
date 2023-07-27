@@ -135,7 +135,6 @@ impl Display for GameData {
             f,
             "{}",
             include_str!("browser/start.html")
-                .to_string()
                 .replace("{GAME}", &self.game)
                 .replace("{DESCRIPTION}", &self.description)
                 .replace("{SLUG}", &self.slug)

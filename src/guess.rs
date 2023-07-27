@@ -157,7 +157,33 @@ impl Display for Guess {
 
 impl Display for Guesses {
     fn fmt(&self, f: &mut Formatter) -> FmtResult {
-        write!(f, "<!-- guesses start -->")?;
+        let win_rate = match &self.games {
+            0 => 0,
+            _ => &self.distribution.iter().sum() / &self.games * 100,
+        };
+        // TODO: Use a templating engine.
+        write!(
+            f,
+            "{}",
+            include_str!("browser/stats.html")
+                .replace("{GAMES}", &self.games.to_string())
+                .replace("{STREAK}", &self.streak.to_string())
+                .replace("{MAX_STREAK}", &self.max_streak.to_string())
+                .replace("{WON_TODAY}", &(&self.last_win == &self.today).to_string())
+                .replace("{PERC_WON}", &win_rate.to_string())
+        )?;
+        for i in 0..TRIES {
+            write!(
+                f,
+                "<div class=\"dist\">\
+                <div class=\"bar\"><span>{}</span></div>\
+                <h5>{}</h5>\
+                </div>",
+                &self.distribution[i].to_string(),
+                i + 1
+            )?;
+        }
+        write!(f, "</div></div>")?;
         for i in 0..TRIES {
             if i < self.outcome.len() {
                 write!(f, "{}", &self.outcome[i])?;

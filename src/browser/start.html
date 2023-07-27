@@ -77,56 +77,6 @@
       <a href="/new" class="diy" target="_self">Create your own</a>
     </p>
   </div>
-  <div id="stats" class="modal">
-    <h2 class="h3">{GAME}</h2>
-    <a class="close" title="Close" href="#">✕</a>
-    <div class="row">
-      <div class="stat">
-        <h4>0</h4>
-        <h5>Games</h5>
-      </div>
-      <div class="stat">
-        <h4>0%</h4>
-        <h5>Won</h5>
-      </div>
-      <div class="stat">
-        <h4>0</h4>
-        <h5>Streak</h5>
-      </div>
-      <div class="stat">
-        <h4>0</h4>
-        <h5>Best streak</h5>
-      </div>
-    </div>
-    <a id="share" class="shareStats" href="#">Share 💪</a>
-    <h3 class="h4">Guess distribution</h3>
-    <div class="row">
-      <div class="dist">
-        <div class="bar"><span>0</span></div>
-        <h5>1</h5>
-      </div>
-      <div class="dist">
-        <div class="bar"><span>0</span></div>
-        <h5>2</h5>
-      </div>
-      <div class="dist">
-        <div class="bar"><span>0</span></div>
-        <h5>3</h5>
-      </div>
-      <div class="dist">
-        <div class="bar"><span>0</span></div>
-        <h5>4</h5>
-      </div>
-      <div class="dist">
-        <div class="bar"><span>0</span></div>
-        <h5>5</h5>
-      </div>
-      <div class="dist">
-        <div class="bar"><span>0</span></div>
-        <h5>6</h5>
-      </div>
-    </div>
-  </div>
   <div id="feedback" class="modal">
     <h2 class="h3">Feedback</h2>
     <a class="close" title="Close" href="#">✕</a>
@@ -140,3 +90,5 @@
     <button id="sendFeedback" class="cta sm flish" type="submit">Send</button></div>
   </div>
   <main>
+    <div id="stats" class="modal" data-won-today="{WON_TODAY}">
+      <h2 class="h3">{GAME}</h2>

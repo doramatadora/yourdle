@@ -42,21 +42,25 @@ const announce = msg => {
   }, 3000)
 }
 
-const recordResult = (res, guess) => {
+const recordResult = stats => {
+  const [guess, outcome] = stats.outcome[stats.outcome.length - 1]
   if (!activeRow.length) return
   let win = true
-  res.forEach((r, idx) => {
-    const currState = activeRow.item(0).children.item(idx).dataset.state
+  // Update tiles with colours.
+  const activeTiles = activeRow.item(0).children
+  outcome.forEach((o, idx) => {
+    const tile = activeTiles.item(idx)
+    const currState = tile.dataset.state
     buttons[guess[idx].toLowerCase()].dataset.state =
-      currState && r < currState ? currState : r
-    activeRow.item(0).children.item(idx).classList.add('flip')
-    activeRow.item(0).children.item(idx).dataset.state = r
-    if (r !== 'correct') win = false
+      currState && o < currState ? currState : o
+    tile.classList.add('flip')
+    tile.dataset.state = o
+    if (o !== 'correct') win = false
   })
   if (win) {
     announce('You win ❤️')
     setTimeout(() => {
-      updateStats()
+      updateStats(stats)
     }, 2000)
   } else if (activeRow.item(0).nextElementSibling) {
     activeRow.item(0).nextElementSibling.classList.add('active')
@@ -66,28 +70,11 @@ const recordResult = (res, guess) => {
   activeRow.item(0).classList.remove('active')
 }
 
-const unmarshalState = () => {
-  try {
-    const cookieName = `yourdle-${gameSlug}`
-    return JSON.parse(
-      window.atob(
-        document.cookie
-          .split('; ')
-          .find(c => c.startsWith(`${cookieName}=`))
-          .substring(cookieName.length + 1)
-      )
-    )
-  } catch (e) {
-    return null
-  }
-}
-
-const updateStats = () => {
-  const intPerc = (num, total) => parseInt((num / total) * 100)
-  const state = unmarshalState()
+const updateStats = state => {
+  const intPerc = (num, total) => (total ? parseInt((num / total) * 100) : 0)
+  const [games, winRate, streak, maxStreak] = stats.querySelectorAll('.stat>h4')
+  const distro = stats.querySelectorAll('.dist>.bar')
   if (state && state.games) {
-    const [games, winRate, streak, maxStreak] =
-      stats.querySelectorAll('.stat>h4')
     games.innerText = state.games
     winRate.innerText =
       intPerc(
@@ -96,10 +83,8 @@ const updateStats = () => {
       ) + '%'
     streak.innerText = state.streak
     maxStreak.innerText = state.maxStreak
-    stats.querySelectorAll('.dist>.bar').forEach((bar, idx) => {
+    distro.forEach((bar, idx) => {
       bar.children[0].innerText = state.distribution[idx]
-      bar.style.height =
-        30 + intPerc(state.distribution[idx], state.games) + 'px'
     })
     if (state.today === state.lastWin) {
       const c = {
@@ -107,7 +92,6 @@ const updateStats = () => {
         near: '🟡',
         wrong: '⚫'
       }
-
       const text = [
         `I took ${state.outcome.length} ${
           state.outcome.length === 1 ? `guess` : `guesses`
@@ -120,6 +104,13 @@ const updateStats = () => {
       clipboard.value = text.join('\n')
       share.style.display = 'block'
     } else share.style.display = 'none'
+  }
+  const totalGames = parseInt(games.innerText) || 0
+  if (totalGames) {
+    distro.forEach(bar => {
+      bar.style.height =
+        30 + intPerc(bar.children[0].innerText, totalGames) + 'px'
+    })
   }
   opn(stats)
 }
@@ -261,7 +252,7 @@ if (!['new', 'feedback', 'validate'].includes(gameSlug)) {
               if (res.ok) return res.json()
               throw new Error(res.status)
             })
-            .then(([word, res]) => recordResult(res, word))
+            .then(res => recordResult(res))
             .catch(({ message }) =>
               announce(
                 message === '404'
@@ -284,26 +275,7 @@ if (!['new', 'feedback', 'validate'].includes(gameSlug)) {
       }
     })
   }
-
-  const state = unmarshalState()
-  if (state) {
-    if (!state.games || !state.outcome || !state.outcome.length) opn(info)
-    else {
-      for (const [guess, outcome] of state.outcome) {
-        outcome.forEach((o, idx) => {
-          const letter = guess[idx].toLowerCase()
-          if (
-            !buttons[letter].dataset.state ||
-            o < buttons[letter].dataset.state
-          )
-            buttons[letter].dataset.state = o
-        })
-      }
-      if (
-        state.outcome.length === 6 ||
-        !state.outcome[state.outcome.length - 1][1].find(o => o !== 'correct')
-      )
-        updateStats()
-    }
+  if (stats && stats.getAttribute('data-won-today') === 'true') {
+    updateStats()
   }
 }

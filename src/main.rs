@@ -90,13 +90,10 @@ fn main(mut req: Request) -> Result<Response, Error> {
                     if let Some(guess) = req.get_query_parameter("guess") {
                         // Check if the guessed word is in the game's list of words.
                         if game_data.validate_word(guess) {
-                            // Update guesses (save stats) and respond with outcome.
+                            // Update guesses (save stats) and respond with stats.
                             guesses.update(&game, &user_id, Guess::new(&guess, &word))?;
-                            return Ok(with_cookie(
-                                StatusCode::OK,
-                                &state::set_user_id(&user_id),
-                            )
-                            .with_body_json(&guesses.outcome.last())?);
+                            return Ok(with_cookie(StatusCode::OK, &state::set_user_id(&user_id))
+                                .with_body_json(&guesses)?);
                         }
                         // Respond with 404 if the word isn't in the list.
                         return Ok(with_cookie(
